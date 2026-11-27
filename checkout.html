@@ -1,1 +1,15 @@
 
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Checkout - Little Luxury UAE</title>
+<style>body{font-family:sans-serif;padding:15px;background:#f5f5f5}.box{background:#fff;padding:15px;border-radius:12px}input,select,textarea{width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box}button{background:#111;color:#fff;border:0;padding:14px;border-radius:8px;width:100%;font-weight:700}</style></head>
+<body><div class="box"><h2>🛒 Checkout - Little Luxury UAE 🇦🇪</h2>
+<input id="name" placeholder="Full Name"><input id="phone" placeholder="WhatsApp Number"><textarea id="address" placeholder="Full Address - Building, Flat, Area"></textarea>
+<select id="emirate"><option>Dubai</option><option>Sharjah</option><option>Abu Dhabi</option><option>Ajman</option><option>Ras Al Khaimah</option><option>Fujairah</option><option>Umm Al Quwain</option></select>
+<select id="pay"><option value="COD">Cash on Delivery - Cash dunga jab cheez aaye</option><option value="Payoneer">Payoneer - Card se pay karunga</option></select>
+<div id="payInfo" style="background:#e8f5ff;padding:10px;border-radius:8px;display:none">Payoneer Email: <b>TUMHARA-PAYONEER-EMAIL@GMAIL.COM</b><br>Order ke baad hum WhatsApp pe Payoneer link bhejenge. Pay karke screenshot bhejo.</div>
+<p><b>Total: AED <span id="total">0</span></b> + Delivery AED 20</p>
+<button onclick="placeOrder()">✅ Confirm Order</button><p id="msg"></p></div>
+<script>
+document.getElementById("total").innerText=localStorage.getItem("ll_total")||"0";
+document.getElementById("pay").addEventListener("change",function(){document.getElementById("payInfo").style.display=this.value==="Payoneer"?"block":"none";});
+function placeOrder(){let n=document.getElementById("name").value;let ph=document.getElementById("phone").value;let ad=document.getElementById("address").value;let pay=document.getElementById("pay").value;let em=document.getElementById("emirate").value;if(!n||!ph||!ad){alert("Naam, Number aur Address likho");return;}let orders=JSON.parse(localStorage.getItem("ll_orders")||"[]");orders.push({name:n,phone:ph,address:ad+" - "+em,product:"Website Order UAE",price:localStorage.getItem("ll_total")||"0",payment:pay,date:new Date().toLocaleString()});localStorage.setItem("ll_orders",JSON.stringify(orders));localStorage.removeItem("ll_cart");let myNum="92300XXXXXXX";let text=`New Order UAE!%0AName: ${n}%0APhone: ${ph}%0AAddress: ${ad} - ${em}%0APayment: ${pay}`;window.open(`https://wa.me/${myNum}?text=${text}`,"_blank");document.getElementById("msg").innerHTML="✅ Order ho gaya! WhatsApp pe bhi bhej diya.";}
+</script></body></html>
