@@ -57,3 +57,81 @@ function showOrders(){
 </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Panel - Little Luxury</title>
+<style>
+body{font-family:sans-serif;background:#f4f4f4;margin:0;padding:15px}
+.box{background:white;padding:20px;border-radius:10px;max-width:500px;margin:20px auto}
+input{width:100%;padding:12px;margin:8px 0;box-sizing:border-box}
+button{width:100%;padding:12px;background:black;color:white;border:none;border-radius:5px;font-size:16px;margin:5px 0}
+.card{background:#f9f9f9;padding:12px;border-radius:8px;margin:10px 0;border:1px solid #ddd}
+h2{text-align:center}
+.del{background:red}
+</style>
+</head>
+<body>
+
+<div class="box" id="loginBox">
+<h2>Admin Login</h2>
+<input id="u" placeholder="Username">
+<input id="p" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p id="msg" style="color:red"></p>
+</div>
+
+<div class="box" id="dash" style="display:none">
+<h2>Little Luxury - Admin Panel ✅</h2>
+<p>Welcome, <b>arehman</b></p>
+<button onclick="logout()" style="background:red">Logout</button>
+<hr>
+<h3>📦 Orders</h3>
+<div id="orders"></div>
+<hr>
+<h3>➕ Naya Product Add Karo</h3>
+<input id="pname" placeholder="Product ka naam - jaise Royal Oud">
+<input id="pprice" placeholder="Price - jaise 4000" type="number">
+<button onclick="addProduct()">Product Add Karo</button>
+<hr>
+<h3>🛍️ Products</h3>
+<div id="plist"></div>
+</div>
+
+<script>
+let products = JSON.parse(localStorage.getItem('products') || '[{"name":"Little Luxury Perfume","price":"2500"},{"name":"Luxury Attar","price":"1500"}]');
+function login(){
+  if(document.getElementById('u').value=='arehman' && document.getElementById('p').value=='arehman16241'){
+    document.getElementById('loginBox').style.display='none';
+    document.getElementById('dash').style.display='block';
+    showOrders(); showProducts();
+  } else { document.getElementById('msg').innerText='Wrong username or password'; }
+}
+function logout(){ location.reload(); }
+function showOrders(){
+  let o = JSON.parse(localStorage.getItem('orders') || '[]');
+  let box = document.getElementById('orders');
+  if(o.length==0){ box.innerHTML='<p>Abhi koi order nahi aaya.</p>'; return; }
+  box.innerHTML='';
+  o.forEach((x,i)=>{ box.innerHTML += '<div class="card"><b>Order '+(i+1)+'</b><br>Name: '+x.name+'<br>Phone: '+x.phone+'<br>Product: '+x.product+'</div>'; });
+}
+function showProducts(){
+  let box=document.getElementById('plist'); box.innerHTML='';
+  products.forEach((x,i)=>{
+    box.innerHTML += '<div class="card"><b>'+x.name+'</b> - Rs '+x.price+'<br><small>Stock: Available</small><br><button class="del" onclick="delP('+i+')">Delete</button></div>';
+  });
+}
+function addProduct(){
+  let n=document.getElementById('pname').value;
+  let pr=document.getElementById('pprice').value;
+  if(!n || !pr){ alert('Naam aur Price dono likho'); return; }
+  products.push({name:n, price:pr});
+  localStorage.setItem('products', JSON.stringify(products));
+  document.getElementById('pname').value=''; document.getElementById('pprice').value='';
+  showProducts(); alert('Product add ho gaya ✅');
+}
+function delP(i){ products.splice(i,1); localStorage.setItem('products', JSON.stringify(products)); showProducts(); }
+</script>
+</body>
+</html>
