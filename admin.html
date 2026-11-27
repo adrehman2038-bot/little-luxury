@@ -1,1 +1,31 @@
-
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Login</title>
+<style>
+body{font-family:sans-serif;background:#f5f5f5;padding:20px}
+.box{background:white;padding:20px;border-radius:10px;max-width:400px;margin:auto}
+input{width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:8px}
+button{width:100%;padding:12px;background:black;color:white;border:none;border-radius:8px}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>Admin Login</h2>
+<input id="u" placeholder="Username">
+<input id="p" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p id="msg" style="color:red"></p>
+</div>
+<script>
+function login(){
+if(document.getElementById('u').value=='arehman' && document.getElementById('p').value=='arehman16241'){
+alert('Login Successful');
+}else{
+document.getElementById('msg').innerText='Wrong username ya password';
+}
+}
+</script>
+</body>
+</html>
