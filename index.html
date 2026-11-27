@@ -1,12 +1,20 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Little Luxury UAE</title>
-<style>body{font-family:sans-serif;margin:0;background:#f5f5f5;padding:15px}h1{text-align:center}.box{background:#fff;padding:12px;border-radius:12px;margin-bottom:15px}img,video{width:100%;border-radius:10px}button{background:#111;color:#fff;border:0;padding:12px;border-radius:8px;width:100%;font-weight:700;margin-top:8px;cursor:pointer}a{color:#111}</style></head>
-<body><h1>✨ Little Luxury UAE 🇦🇪</h1><p style="text-align:center">COD + Payoneer Available</p><div id="list"></div>
-<div class="box"><h3>🛒 Cart: <span id="count">0</span> items | Total: AED <span id="total">0</span></h3><button onclick="goCheckout()">Checkout Karo →</button></div>
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>M J Traders</title>
+<style>body{font-family:sans-serif;padding:15px;max-width:500px;margin:auto}input,select,button{width:100%;padding:12px;margin:6px 0;font-size:16px}button{background:green;color:#fff;border:0;border-radius:8px}.card{border:1px solid #ddd;padding:10px;border-radius:8px;margin:8px 0}</style>
+</head><body>
+<h2>M J Traders - Order Form</h2>
+<input id="date" type="date"><input id="name" placeholder="Name"><input id="phone" placeholder="Phone"><input id="address" placeholder="Address"><input id="total" placeholder="Total" type="number"><select id="payment"><option>Cash</option><option>JazzCash</option><option>EasyPaisa</option><option>Bank</option></select>
+<button onclick="save()">Order Save Karo</button>
+<p><a href="#" onclick="showAdmin()">Admin Page Kholo</a></p>
+<div id="admin" style="display:none"><h3>All Orders</h3><div id="list"></div><button onclick="clearAll()">Sab Delete</button></div>
 <script>
-let products=JSON.parse(localStorage.getItem("ll_products")||"[]");
-let cart=JSON.parse(localStorage.getItem("ll_cart")||"[]");
-function render(){let l=document.getElementById("list");if(!products.length){l.innerHTML="<div class='box'>Abhi koi product nahi. Admin se add hoga.</div>";return;}l.innerHTML="";products.forEach((p,i)=>{l.innerHTML+=`<div class="box"><b>${p.n}</b> - AED ${p.pr} (${p.c})<br>${p.d||""}${p.im?`<img src="${p.im}">`:""}${p.vi?`<video src="${p.vi}" controls></video>`:""}<button onclick="addCart(${i})">Add to Cart</button></div>`});let t=cart.reduce((s,c)=>s+Number(c.pr),0);document.getElementById("count").innerText=cart.length;document.getElementById("total").innerText=t;localStorage.setItem("ll_total",t);}
-function addCart(i){cart.push(products[i]);localStorage.setItem("ll_cart",JSON.stringify(cart));render();alert("Cart me add ho gaya ✅");}
-function goCheckout(){if(!cart.length){alert("Pehle product add karo");return;}location.href="checkout.html";}
-render();setInterval(()=>{let np=JSON.parse(localStorage.getItem("ll_products")||"[]");if(JSON.stringify(np)!==JSON.stringify(products)){products=np;render();}},2000);
+function save(){
+ let o={date:date.value,name:name.value,phone:phone.value,address:address.value,total:total.value,payment:payment.value};
+ let a=JSON.parse(localStorage.getItem('orders')||'[]');a.push(o);localStorage.setItem('orders',JSON.stringify(a));
+ alert('Order Save Ho Gaya');
+}
+function showAdmin(){admin.style.display='block';let a=JSON.parse(localStorage.getItem('orders')||'[]');list.innerHTML=a.map((x,i)=>`<div class=card><b>${i+1}. ${x.name}</b><br>${x.date} | ${x.phone}<br>${x.address}<br>Total: ${x.total} | ${x.payment}</div>`).join('')||'Koi order nahi';}
+function clearAll(){localStorage.removeItem('orders');showAdmin();}
+date.value=new Date().toISOString().slice(0,10);
 </script></body></html>
