@@ -39,3 +39,29 @@ window.open(`https://wa.me/${myNum}?text=${text}`,"_blank");
 if(type=="Payoneer"){document.getElementById("msg").innerHTML="✅ Come on WhatsApp, I will send you Payoneer Link. Pay first, then I will send your order.";}else{document.getElementById("msg").innerHTML="✅ Order Received! Pay cash on delivery.";}
 }
 </script></body></html>
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Checkout - Little Luxury</title>
+<style>body{font-family:sans-serif;padding:15px;background:#f5f5f5}.box{background:#fff;padding:15px;border-radius:12px}input,textarea,select{width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box}button{border:0;padding:14px;border-radius:8px;width:100%;font-weight:700;margin-top:8px}.cod{background:#111;color:#fff}.pay{background:#0070ba;color:#fff}.payinfo{background:#eef6ff;padding:10px;border-radius:8px;font-size:14px}</style></head>
+<body><div class="box"><h2>Checkout - Little Luxury</h2>
+<input id="name" placeholder="Full Name">
+<input id="phone" placeholder="WhatsApp Number">
+<textarea id="address" placeholder="Full Address"></textarea>
+<select id="paymethod" onchange="showPay()"><option value="COD">Cash on Delivery - Pay Later</option><option value="Payoneer">Payoneer - Pay First</option></select>
+<div id="paybox" class="payinfo" style="display:none">Payoneer Email: <b>arehman1624786@gmail.com</b><br>Ask for payment link on WhatsApp, pay and send screenshot.</div>
+<p><b>Total: AED <span id="total">0</span> + Delivery 20</b></p>
+<button class="cod" onclick="placeOrder('COD')">✅ Place COD Order</button>
+<button class="pay" onclick="placeOrder('Payoneer')">💳 Pay First with Payoneer</button>
+<p id="msg"></p></div>
+<script>
+function showPay(){document.getElementById("paybox").style.display=document.getElementById("paymethod").value=="Payoneer"?"block":"none";}
+document.getElementById("total").innerText=localStorage.getItem("ll_total")||"0";
+function placeOrder(type){
+let n=document.getElementById("name").value;let ph=document.getElementById("phone").value;let ad=document.getElementById("address").value;
+if(!n||!ph||!ad){alert("Please enter Name, Number and Address");return;}
+let myNum="923475204853";
+let total=localStorage.getItem("ll_total")||"0";
+let text=`NEW ORDER - ${type}%0AName: ${n}%0APhone: ${ph}%0AAddress: ${ad}%0ATotal: AED ${total}%0APayment: ${type}`;
+window.open(`https://wa.me/${myNum}?text=${text}`,"_blank");
+if(type=="Payoneer"){document.getElementById("msg").innerHTML="✅ Come on WhatsApp, I will send you Payoneer Link. Pay first, then I will send your order.";}else{document.getElementById("msg").innerHTML="✅ Order Received! Pay cash on delivery.";}
+}
+</script></body></html>
