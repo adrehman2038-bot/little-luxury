@@ -1,12 +1,24 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Little Luxury UAE</title>
-<style>body{font-family:sans-serif;margin:0;background:#f5f5f5;padding:15px}h1{text-align:center}.box{background:#fff;padding:12px;border-radius:12px;margin-bottom:15px}img,video{width:100%;border-radius:10px}button{background:#111;color:#fff;border:0;padding:12px;border-radius:8px;width:100%;font-weight:700;margin-top:8px;cursor:pointer}a{color:#111}</style></head>
-<body><h1>✨ Little Luxury UAE 🇦🇪</h1><p style="text-align:center">COD + Payoneer Available</p><div id="list"></div>
-<div class="box"><h3>🛒 Cart: <span id="count">0</span> items | Total: AED <span id="total">0</span></h3><button onclick="goCheckout()">Checkout Karo →</button></div>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin - Little Luxury</title>
+<style>body{font-family:sans-serif;background:#f5f5f5;margin:0;padding:15px}.box{background:#fff;padding:15px;border-radius:12px;margin-bottom:15px}input,select,textarea{width:100%;padding:10px;margin:5px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box}button{background:#111;color:#fff;border:0;padding:12px;border-radius:8px;width:100%;font-weight:700;cursor:pointer}.del{background:#ff2d55;margin-top:5px}.prod{border:1px solid #eee;padding:10px;border-radius:10px;margin-bottom:10px}img,video{width:100%;border-radius:10px;margin-top:5px}.badge{background:red;color:#fff;padding:2px 8px;border-radius:20px;font-size:12px}</style></head>
+<body>
+<div id="loginBox" class="box"><h2>🔐 Little Luxury Admin</h2><input id="u" placeholder="Username"><input id="p" type="password" placeholder="Password"><button onclick="login()">Login</button><p id="msg"></p><p style="font-size:12px">Tum: arehman / arehman16241<br>Dost: friend / friend123</p></div>
+<div id="dash" style="display:none">
+<div class="box" style="display:flex;justify-content:space-between;align-items:center"><h2>👋 <span id="who"></span></h2><button onclick="logout()" style="width:auto;padding:8px 15px">Logout</button></div>
+<div class="box"><h3>📦 Orders <span id="ordCount" class="badge">0</span></h3><div id="orders"></div><button onclick="clearOrders()">Orders Clear Karo</button></div>
+<div class="box"><h3>➕ Naya Product Add Karo</h3><input id="pn" placeholder="Product Naam"><input id="pp" type="number" placeholder="Price AED - jaise 150"><select id="pc"><option value="men">Men</option><option value="women">Women</option><option value="kids">Kids</option></select><input id="pi" placeholder="Image Link - Copy Image Address"><input id="pv" placeholder="Video Link - agar ho to"><textarea id="pd" placeholder="Description"></textarea><button onclick="addProduct()">✅ Product Add Karo</button></div>
+<div class="box"><h3>🛍️ Products</h3><div id="plist"></div></div></div>
 <script>
+let users={arehman:"arehman16241",friend:"friend123"};
 let products=JSON.parse(localStorage.getItem("ll_products")||"[]");
-let cart=JSON.parse(localStorage.getItem("ll_cart")||"[]");
-function render(){let l=document.getElementById("list");if(!products.length){l.innerHTML="<div class='box'>Abhi koi product nahi. Admin se add hoga.</div>";return;}l.innerHTML="";products.forEach((p,i)=>{l.innerHTML+=`<div class="box"><b>${p.n}</b> - AED ${p.pr} (${p.c})<br>${p.d||""}${p.im?`<img src="${p.im}">`:""}${p.vi?`<video src="${p.vi}" controls></video>`:""}<button onclick="addCart(${i})">Add to Cart</button></div>`});let t=cart.reduce((s,c)=>s+Number(c.pr),0);document.getElementById("count").innerText=cart.length;document.getElementById("total").innerText=t;localStorage.setItem("ll_total",t);}
-function addCart(i){cart.push(products[i]);localStorage.setItem("ll_cart",JSON.stringify(cart));render();alert("Cart me add ho gaya ✅");}
-function goCheckout(){if(!cart.length){alert("Pehle product add karo");return;}location.href="checkout.html";}
-render();setInterval(()=>{let np=JSON.parse(localStorage.getItem("ll_products")||"[]");if(JSON.stringify(np)!==JSON.stringify(products)){products=np;render();}},2000);
+let orders=JSON.parse(localStorage.getItem("ll_orders")||"[]");
+let lastOrderCount=orders.length;
+function login(){let u=document.getElementById("u").value.trim();let p=document.getElementById("p").value.trim();if(users[u]&&users[u]===p){localStorage.setItem("ll_admin",u);showDash(u);}else{document.getElementById("msg").innerText="❌ Galat username ya password";}}
+function showDash(u){document.getElementById("loginBox").style.display="none";document.getElementById("dash").style.display="block";document.getElementById("who").innerText=u;render();}
+function logout(){localStorage.removeItem("ll_admin");location.reload();}
+function addProduct(){let n=document.getElementById("pn").value;let pr=document.getElementById("pp").value;let c=document.getElementById("pc").value;let im=document.getElementById("pi").value;let vi=document.getElementById("pv").value;let d=document.getElementById("pd").value;if(!n||!pr){alert("Naam aur Price likho");return;}products.push({n,pr,c,im,vi,d});localStorage.setItem("ll_products",JSON.stringify(products));alert("Product add ho gaya ✅");render();document.getElementById("pn").value="";document.getElementById("pp").value="";}
+function delProduct(i){if(confirm("Delete karna hai?")){products.splice(i,1);localStorage.setItem("ll_products",JSON.stringify(products));render();}}
+function clearOrders(){if(confirm("Saare orders clear karein?")){orders=[];localStorage.setItem("ll_orders",JSON.stringify(orders));render();}}
+function render(){let pl=document.getElementById("plist");pl.innerHTML=products.length?"":"Abhi koi product nahi";products.forEach((p,i)=>{pl.innerHTML+=`<div class="prod"><b>${p.n}</b> - AED ${p.pr} (${p.c})<br>${p.d||""}${p.im?`<img src="${p.im}">`:""}${p.vi?`<video src="${p.vi}" controls></video>`:""}<button class="del" onclick="delProduct(${i})">🗑️ Remove Karo</button></div>`});let o=document.getElementById("orders");document.getElementById("ordCount").innerText=orders.length;o.innerHTML=orders.length?"":"Abhi koi order nahi";orders.forEach(ord=>{o.innerHTML+=`<div class="prod"><b>${ord.name||"Customer"}</b> - ${ord.phone||""}<br>${ord.address||""}<br>Payment: ${ord.payment||""}<br><a href="https://wa.me/${ord.phone||""}" target="_blank">WhatsApp Karo</a></div>`});if(orders.length>lastOrderCount){alert("🔔 Naya Order Aaya Hai!");lastOrderCount=orders.length;}}
+let saved=localStorage.getItem("ll_admin");if(saved&&users[saved])showDash(saved);
+setInterval(()=>{let no=JSON.parse(localStorage.getItem("ll_orders")||"[]");if(no.length!==orders.length){orders=no;render();}},3000);
 </script></body></html>
