@@ -1,24 +1,35 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin - Little Luxury</title>
-<style>body{font-family:sans-serif;background:#f5f5f5;margin:0;padding:15px}.box{background:#fff;padding:15px;border-radius:12px;margin-bottom:15px}input,select,textarea{width:100%;padding:10px;margin:5px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box}button{background:#111;color:#fff;border:0;padding:12px;border-radius:8px;width:100%;font-weight:700;cursor:pointer}.del{background:#ff2d55;margin-top:5px}.prod{border:1px solid #eee;padding:10px;border-radius:10px;margin-bottom:10px}img,video{width:100%;border-radius:10px;margin-top:5px}.badge{background:red;color:#fff;padding:2px 8px;border-radius:20px;font-size:12px}</style></head>
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ms Trader - Admin</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
+body{background:#f2f2f2;padding:15px}
+.box{background:#fff;max-width:420px;margin:30px auto;padding:25px;border-radius:15px;box-shadow:0 5px 20px rgba(0,0,0,0.1);text-align:center}
+h2{margin-bottom:5px}
+p{color:#666;font-size:14px;margin-bottom:15px}
+input{width:100%;padding:13px;margin:8px 0;border:1px solid #ddd;border-radius:10px;font-size:16px}
+.btn{width:100%;padding:14px;background:#000;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer}
+.btn2{background:#25D366}
+.order{background:#f9f9f9;border:1px solid #eee;padding:12px;border-radius:10px;margin:10px 0;text-align:left;font-size:14px;line-height:1.6}
+.hidden{display:none}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.logout{color:red;cursor:pointer;font-weight:bold}
+</style>
+</head>
 <body>
-<div id="loginBox" class="box"><h2>🔐 Little Luxury Admin</h2><input id="u" placeholder="Username"><input id="p" type="password" placeholder="Password"><button onclick="login()">Login</button><p id="msg"></p><p style="font-size:12px">Tum: arehman / arehman16241<br>Dost: friend / friend123</p></div>
-<div id="dash" style="display:none">
-<div class="box" style="display:flex;justify-content:space-between;align-items:center"><h2>👋 <span id="who"></span></h2><button onclick="logout()" style="width:auto;padding:8px 15px">Logout</button></div>
-<div class="box"><h3>📦 Orders <span id="ordCount" class="badge">0</span></h3><div id="orders"></div><button onclick="clearOrders()">Orders Clear Karo</button></div>
-<div class="box"><h3>➕ Naya Product Add Karo</h3><input id="pn" placeholder="Product Naam"><input id="pp" type="number" placeholder="Price AED - jaise 150"><select id="pc"><option value="men">Men</option><option value="women">Women</option><option value="kids">Kids</option></select><input id="pi" placeholder="Image Link - Copy Image Address"><input id="pv" placeholder="Video Link - agar ho to"><textarea id="pd" placeholder="Description"></textarea><button onclick="addProduct()">✅ Product Add Karo</button></div>
-<div class="box"><h3>🛍️ Products</h3><div id="plist"></div></div></div>
-<script>
-let users={arehman:"arehman16241",friend:"friend123"};
-let products=JSON.parse(localStorage.getItem("ll_products")||"[]");
-let orders=JSON.parse(localStorage.getItem("ll_orders")||"[]");
-let lastOrderCount=orders.length;
-function login(){let u=document.getElementById("u").value.trim();let p=document.getElementById("p").value.trim();if(users[u]&&users[u]===p){localStorage.setItem("ll_admin",u);showDash(u);}else{document.getElementById("msg").innerText="❌ Galat username ya password";}}
-function showDash(u){document.getElementById("loginBox").style.display="none";document.getElementById("dash").style.display="block";document.getElementById("who").innerText=u;render();}
-function logout(){localStorage.removeItem("ll_admin");location.reload();}
-function addProduct(){let n=document.getElementById("pn").value;let pr=document.getElementById("pp").value;let c=document.getElementById("pc").value;let im=document.getElementById("pi").value;let vi=document.getElementById("pv").value;let d=document.getElementById("pd").value;if(!n||!pr){alert("Naam aur Price likho");return;}products.push({n,pr,c,im,vi,d});localStorage.setItem("ll_products",JSON.stringify(products));alert("Product add ho gaya ✅");render();document.getElementById("pn").value="";document.getElementById("pp").value="";}
-function delProduct(i){if(confirm("Delete karna hai?")){products.splice(i,1);localStorage.setItem("ll_products",JSON.stringify(products));render();}}
-function clearOrders(){if(confirm("Saare orders clear karein?")){orders=[];localStorage.setItem("ll_orders",JSON.stringify(orders));render();}}
-function render(){let pl=document.getElementById("plist");pl.innerHTML=products.length?"":"Abhi koi product nahi";products.forEach((p,i)=>{pl.innerHTML+=`<div class="prod"><b>${p.n}</b> - AED ${p.pr} (${p.c})<br>${p.d||""}${p.im?`<img src="${p.im}">`:""}${p.vi?`<video src="${p.vi}" controls></video>`:""}<button class="del" onclick="delProduct(${i})">🗑️ Remove Karo</button></div>`});let o=document.getElementById("orders");document.getElementById("ordCount").innerText=orders.length;o.innerHTML=orders.length?"":"Abhi koi order nahi";orders.forEach(ord=>{o.innerHTML+=`<div class="prod"><b>${ord.name||"Customer"}</b> - ${ord.phone||""}<br>${ord.address||""}<br>Payment: ${ord.payment||""}<br><a href="https://wa.me/${ord.phone||""}" target="_blank">WhatsApp Karo</a></div>`});if(orders.length>lastOrderCount){alert("🔔 Naya Order Aaya Hai!");lastOrderCount=orders.length;}}
-let saved=localStorage.getItem("ll_admin");if(saved&&users[saved])showDash(saved);
-setInterval(()=>{let no=JSON.parse(localStorage.getItem("ll_orders")||"[]");if(no.length!==orders.length){orders=no;render();}},3000);
-</script></body></html>
+
+<!-- LOGIN -->
+<div class="box" id="loginBox">
+<h2>Ms Trader - Admin</h2>
+<p>Admin Login</p>
+<input type="text" id="user" placeholder="Username">
+<input type="password" id="pass" placeholder="Password">
+<button class="btn" onclick="login()">Login</button>
+<p style="margin-top:12px">Demo: arehman / arehman16241</p>
+</div>
+
+<!-- PANEL -->
+<div class="box hidden" id="panelBox" style="
