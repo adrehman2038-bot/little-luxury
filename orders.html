@@ -1,1 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MS Trader Orders</title>
+<style>
+:root{--bg:#eef1f5;--card:#fff;--ink:#16213a;--mute:#5d6b85;--line:#d9dfe9;--acc:#2a56d6;--ok:#17803d;--warn:#b45309;--bad:#b42318}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit;color:inherit}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+textarea{min-height:70px}
+label{display:block;font-size:13px;color:var(--mute);margin:10px 0 4px}
+button{border:0;border-radius:8px;padding:10px 14px;background:var(--acc);color:#fff;cursor:pointer}
+button.ghost{background:#e4e9f2;color:var(--ink)}
+button.bad{background:#fde8e6;color:var(--bad)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+header{position:sticky;top:0;z-index:5;background:var(--ink);color:#fff;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+header h1{font-size:17px;margin:0}
+header button{background:#2b3a5e}
+nav{display:flex;gap:6px;padding:10px 14px 0}
+nav button{background:#e4e9f2;color:var(--ink);flex:1}
+nav button.on{background:var(--acc);color:#fff}
+main{padding:12px 14px 80px;max-width:760px;margin:0 auto}
+.bar{display:flex;gap:8px;margin-bottom:12px}
+.bar select{max-width:140px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px}
+.row{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;background:#e4e9f2;white-space:nowrap}
+.s-Pending{background:#fef3c7;color:var(--warn)}
+.s-Shipped{background:#dbe7ff;color:var(--acc)}
+.s-Delivered{background:#dcfce7;color:var(--ok)}
+.s-Returned,.s-Cancelled{background:#fde8e6;color:var(--bad)}
+.mute{color:var(--mute);font-size:13px}
+.acts{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.acts button,.acts a{padding:7px 10px;font-size:13px}
+.acts a{background:#e4e9f2;border-radius:8px;color:var(--ink);text-decoration:none}
+.fab{position:fixed;right:16px;bottom:16px;box-shadow:0 4px 14px rgba(22,33,58,.3);padding:14px 18px;border-radius:99px}
+dialog{border:0;border-radius:12px;padding:16px;width:min(94vw,460px);max-height:92vh}
+dialog::backdrop{background:rgba(22,33,58,.5)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.empty{text-align:center;color:var(--mute);padding:30px 10px}
+#auth{max-width:380px;margin:12vh auto;padding:0 16px}
+.err{color:var(--bad);font-size:13px;min-height:18px;margin-top:8px}
+.toast{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 14px;border-radius:8px;font-size:13px}
+</style>
+</head>
+<body>
 
+<div id="auth" hidden>
+  <h1>MS Trader Orders</h1>
+  <p class="mute">Login karo ya naya account banao.</p>
+  <label>Email</label><input id="em" type="email" autocomplete="email">
+  <label>Password</label><input id="pw" type="password" autocomplete="current-password">
+  <div class="err" id="aerr"></div>
+  <div class="acts"><button id="login">Login</button><button class="ghost" id="signup">Create account</button></div>
+</div>
+
+<div id="app" hidden>
+  <header><h1>MS Trader Orders</h1><button id="out">Logout</button></header>
+  <nav><button id="tO" class="on">Orders</button><button id="tP">Products</button><button id="tS">Website</button></nav>
+  <main>
+    <section id="vO">
+      <div class="bar"><input id="q" placeholder="Search name, phone, tracking"><select id="fs"><option value="">All</option><option>Pending</option><option>Shipped</option><option>Delivered</option><option>Returned</option><option>Cancelled</option></select></div>
+      <div id="lO"></div>
+    </section>
+    <section id="vP" hidden><div id="lP"></div></section>
+    <section id="vS" hidden><div id="lS"></div></section>
+  </main>
+  <button class="fab" id="add">+ Add order</button>
+</div>
+
+<dialog id="dO">
+  <h2 id="dOt">New order</h2>
+  <div class="two">
+    <div><label>Platform</label><select id="oPl"><option>eBay</option><option>Amazon</option></select></div>
+    <div><label>Status</label><select id="oSt"><option>Pending</option><option>Shipped</option><option>Delivered</option><option>Returned</option><option>Cancelled</option></select></div>
+  </div>
+  <label>Product</label><input id="oPr" list="plist" placeholder="Product name">
+  <datalist id="plist"></datalist>
+  <div class="two">
+    <div><label>Quantity</label><input id="oQ" type="number" min="1" value="1"></div>
+    <div><label>Total amount</label><input id="oAm" type="number" min="0" step="0.01"></div>
+  </div>
+  <label>Customer name</label><input id="oNm">
+  <label>Phone</label><input id="oPh" type="tel">
+  <label>Address</label><textarea id="oAd"></textarea>
+  <div class="two">
+    <div><label>Tracking number</label><input id="oTr"></div>
+    <div><label>Courier</label><input id="oCo"></div>
+  </div>
+  <div class="err" id="oerr"></div>
+  <div class="acts"><button id="oSave">Save order</button><button class="ghost" id="oX">Cancel</button></div>
+</dialog>
+
+<dialog id="dP">
+  <h2 id="dPt">New product</h2>
+  <label>Product name</label><input id="pNm">
+  <div class="two">
+    <div><label>SKU</label><input id="pSk"></div>
+    <div><label>Stock</label><input id="pSt" type="number" min="0" value="0"></div>
+  </div>
+  <div class="two">
+    <div><label>Cost price</label><input id="pCo" type="number" min="0" step="0.01"></div>
+    <div><label>Selling price</label><input id="pSp" type="number" min="0" step="0.01"></div>
+  </div>
+  <div class="err" id="perr"></div>
+  <div class="acts"><button id="pSave">Save product</button><button class="ghost" id="pX">Cancel</button></div>
+</dialog>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,collection,addDoc,setDoc,doc,deleteDoc,onSnapshot,query,orderBy,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const app=initializeApp({
+  apiKey:"AIzaSyAc6PuYy9CD5LcDAuM_Exl_WDFS4c_LEDA",
+  authDomain:"ms-trader-6d3ed.firebaseapp.com",
+  projectId:"ms-trader-6d3ed",
+  storageBucket:"ms-trader-6d3ed.firebasestorage.app",
+  messagingSenderId:"160511447025",
+  appId:"1:160511447025:web:d80fcfbfcfe4c8758bfe50"
+});
+const auth=getAuth(app), db=getFirestore(app);
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let sites=[],orders=[],products=[],unsub=[],editO=null,editP=null;
+
+function toast(t){const d=document.createElement("div");d.className="toast";d.textContent=t;document.body.append(d);setTimeout(()=>d.remove(),1800)}
+const msg=e=>({"auth/invalid-credential":"Email ya password galat hai.","auth/email-already-in-use":"Ye email pehle se registered hai.","auth/weak-password":"Password kam az kam 6 characters ka rakho.","auth/invalid-email":"Email sahi likho.","auth/operation-not-allowed":"Firebase mein Email/Password enable nahi hai.","auth/unauthorized-domain":"Is domain ko Firebase Authentication > Settings > Authorized domains mein add karo."}[e.code]||e.code||e.message);
+
+async function sign(fn){$("aerr").textContent="";try{await fn(auth,$("em").value.trim(),$("pw").value)}catch(e){$("aerr").textContent=msg(e)}}
+$("login").onclick=()=>sign(signInWithEmailAndPassword);
+$("signup").onclick=()=>sign(createUserWithEmailAndPassword);
+$("out").onclick=()=>signOut(auth);
+
+onAuthStateChanged(auth,u=>{
+  unsub.forEach(f=>f());unsub=[];
+  $("auth").hidden=!!u;$("app").hidden=!u;
+  if(!u)return;
+  unsub.push(onSnapshot(query(collection(db,"orders"),orderBy("createdAt","desc")),s=>{orders=s.docs.map(d=>({id:d.id,...d.data()}));drawO()},e=>toast(e.code)));
+  unsub.push(onSnapshot(query(collection(db,"siteOrders"),orderBy("createdAt","desc")),s=>{sites=s.docs.map(d=>({id:d.id,...d.data()}));drawS()},e=>toast(e.code)));
+  unsub.push(onSnapshot(query(collection(db,"products"),orderBy("name")),s=>{products=s.docs.map(d=>({id:d.id,...d.data()}));drawP()},e=>toast(e.code)));
+});
+
+function tab(n){["O","P","S"].forEach(k=>{$("v"+k).hidden=k!==n;$("t"+k).classList.toggle("on",k===n)});$("add").hidden=n==="S";$("add").textContent=n==="O"?"+ Add order":"+ Add product"}
+$("tO").onclick=()=>tab("O");$("tP").onclick=()=>tab("P");$("tS").onclick=()=>tab("S");
+$("add").onclick=()=>$("vO").hidden?openP():openO();
+$("q").oninput=drawO;$("fs").onchange=drawO;
+
+function drawO(){
+  const q=$("q").value.toLowerCase(),f=$("fs").value;
+  const list=orders.filter(o=>(!f||o.status===f)&&(!q||[o.customerName,o.phone,o.trackingNumber,o.product].join(" ").toLowerCase().includes(q)));
+  $("lO").innerHTML=list.length?list.map(o=>`<div class="card"><div class="row"><div><b>${esc(o.customerName)}</b><div class="mute">${esc(o.product)} x ${esc(o.qty)} &middot; ${esc(o.platform)}${o.amount?" &middot; "+esc(o.amount):""}</div></div><span class="tag s-${esc(o.status)}">${esc(o.status)}</span></div>
+  <div class="mute" style="margin-top:6px">${esc(o.address)}</div>
+  <div style="margin-top:6px">${o.trackingNumber?`Tracking: <b>${esc(o.trackingNumber)}</b> ${o.courier?"("+esc(o.courier)+")":""}`:'<span class="mute">Tracking number abhi nahi</span>'}</div>
+  <div class="acts"><button data-e="${o.id}">Edit</button>${o.phone?`<a href="tel:${esc(o.phone)}">Call</a>`:""}<button class="ghost" data-c="${o.id}">Copy address</button><button class="bad" data-d="${o.id}">Delete</button></div></div>`).join(""):'<div class="empty">Koi order nahi. "+ Add order" dabao.</div>';
+}
+$("lO").onclick=async e=>{
+  const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.e)openO(orders.find(o=>o.id===b.dataset.e));
+  if(b.dataset.c){const o=orders.find(x=>x.id===b.dataset.c);try{await navigator.clipboard.writeText(`${o.customerName}\n${o.phone}\n${o.address}`);toast("Copied")}catch{toast("Copy nahi hua")}}
+  if(b.dataset.d&&confirm("Ye order delete karna hai?"))deleteDoc(doc(db,"orders",b.dataset.d)).catch(x=>toast(x.code));
+};
+
+function openO(o){
+  editO=o?o.id:null;$("dOt").textContent=o?"Edit order":"New order";$("oerr").textContent="";
+  const v=o||{platform:"eBay",status:"Pending",qty:1};
+  $("oPl").value=v.platform;$("oSt").value=v.status;$("oPr").value=v.product||"";$("oQ").value=v.qty||1;$("oAm").value=v.amount||"";
+  $("oNm").value=v.customerName||"";$("oPh").value=v.phone||"";$("oAd").value=v.address||"";$("oTr").value=v.trackingNumber||"";$("oCo").value=v.courier||"";
+  $("dO").showModal();
+}
+$("oX").onclick=()=>$("dO").close();
+$("oSave").onclick=async()=>{
+  const d={platform:$("oPl").value,status:$("oSt").value,product:$("oPr").value.trim(),qty:Number($("oQ").value)||1,amount:$("oAm").value,customerName:$("oNm").value.trim(),phone:$("oPh").value.trim(),address:$("oAd").value.trim(),trackingNumber:$("oTr").value.trim(),courier:$("oCo").value.trim()};
+  if(!d.customerName||!d.product){$("oerr").textContent="Customer name aur product zaroori hain.";return}
+  try{
+    if(editO)await setDoc(doc(db,"orders",editO),{...d,updatedAt:serverTimestamp()},{merge:true});
+    else await addDoc(collection(db,"orders"),{...d,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+    $("dO").close();toast("Order saved");
+  }catch(e){$("oerr").textContent=e.code||e.message}
+};
+
+function drawS(){
+  $("lS").innerHTML=sites.length?sites.map(o=>{const dn=o.status==="done";return `<div class="card"><div class="row">${o.img?`<img src="${esc(o.img)}" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:8px">`:""}<div style="flex:1"><b>${esc(o.name)}</b><div class="mute">${esc(o.product)} - AED ${esc(o.price)} &middot; ${esc(o.payment)}</div></div><span class="tag s-${dn?"Delivered":"Pending"}">${dn?"Done":"New"}</span></div>
+  <div class="mute" style="margin-top:6px">${esc(o.phone||o.email)}</div>
+  <div class="acts">${o.phone?`<a href="tel:${esc(o.phone)}">Call</a>`:""}<button data-s="${o.id}" data-v="${dn?"new":"done"}">${dn?"Mark as new":"Mark as done"}</button><button class="bad" data-x="${o.id}">Delete</button></div></div>`}).join(""):'<div class="empty">Website se abhi koi order nahi aaya.</div>';
+}
+$("lS").onclick=e=>{
+  const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.s)setDoc(doc(db,"siteOrders",b.dataset.s),{status:b.dataset.v},{merge:true}).catch(x=>toast(x.code));
+  if(b.dataset.x&&confirm("Ye order delete karna hai?"))deleteDoc(doc(db,"siteOrders",b.dataset.x)).catch(x=>toast(x.code));
+};
+
+function drawP(){
+  $("plist").innerHTML=products.map(p=>`<option value="${esc(p.name)}">`).join("");
+  $("lP").innerHTML=products.length?products.map(p=>`<div class="card"><div class="row"><div><b>${esc(p.name)}</b><div class="mute">${p.sku?"SKU "+esc(p.sku)+" &middot; ":""}Stock ${esc(p.stock)}</div></div><div class="mute" style="text-align:right">Cost ${esc(p.cost||"-")}<br>Sell ${esc(p.price||"-")}</div></div>
+  <div class="acts"><button data-e="${p.id}">Edit</button><button class="bad" data-d="${p.id}">Delete</button></div></div>`).join(""):'<div class="empty">Koi product nahi. "+ Add product" dabao.</div>';
+}
+$("lP").onclick=e=>{
+  const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.e)openP(products.find(p=>p.id===b.dataset.e));
+  if(b.dataset.d&&confirm("Ye product delete karna hai?"))deleteDoc(doc(db,"products",b.dataset.d)).catch(x=>toast(x.code));
+};
+function openP(p){
+  editP=p?p.id:null;$("dPt").textContent=p?"Edit product":"New product";$("perr").textContent="";
+  $("pNm").value=p?.name||"";$("pSk").value=p?.sku||"";$("pSt").value=p?.stock??0;$("pCo").value=p?.cost||"";$("pSp").value=p?.price||"";
+  $("dP").showModal();
+}
+$("pX").onclick=()=>$("dP").close();
+$("pSave").onclick=async()=>{
+  const d={name:$("pNm").value.trim(),sku:$("pSk").value.trim(),stock:Number($("pSt").value)||0,cost:$("pCo").value,price:$("pSp").value};
+  if(!d.name){$("perr").textContent="Product ka naam likho.";return}
+  try{
+    if(editP)await setDoc(doc(db,"products",editP),d,{merge:true});
+    else await addDoc(collection(db,"products"),{...d,createdAt:serverTimestamp()});
+    $("dP").close();toast("Product saved");
+  }catch(e){$("perr").textContent=e.code||e.message}
+};
+</script>
+</body>
+                               </html>
