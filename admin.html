@@ -20,8 +20,6 @@ input{width:100%;padding:13px;margin:8px 0;border:1px solid #ddd;border-radius:1
 </style>
 </head>
 <body>
-
-<!-- LOGIN -->
 <div class="box" id="loginBox">
 <h2>Ms Trader - Admin</h2>
 <p>Admin Login</p>
@@ -30,6 +28,39 @@ input{width:100%;padding:13px;margin:8px 0;border:1px solid #ddd;border-radius:1
 <button class="btn" onclick="login()">Login</button>
 <p style="margin-top:12px">Demo: arehman / arehman16241</p>
 </div>
-
-<!-- PANEL -->
-<div class="box hidden" id="panelBox" style="
+<div class="box hidden" id="panelBox" style="max-width:600px">
+<div class="top"><h2>Admin Panel</h2><span class="logout" onclick="logout()">Logout</span></div>
+<p id="welcome"></p>
+<button class="btn btn2" onclick="loadOrders()">Orders Dekhen</button>
+<div id="orders"></div>
+</div>
+<script>
+let users = {"arehman":"arehman16241","admin":"admin123"};
+function login(){
+let u = document.getElementById('user').value.trim();
+let p = document.getElementById('pass').value.trim();
+if(users[u] && users[u]==p){
+document.getElementById('loginBox').classList.add('hidden');
+document.getElementById('panelBox').classList.remove('hidden');
+document.getElementById('welcome').innerText = "Welcome, "+u;
+loadOrders();
+}else{alert("Ghalat Username ya Password!");}
+}
+function logout(){
+document.getElementById('panelBox').classList.add('hidden');
+document.getElementById('loginBox').classList.remove('hidden');
+document.getElementById('user').value="";
+document.getElementById('pass').value="";
+}
+function loadOrders(){
+let orders = JSON.parse(localStorage.getItem('ms_orders') || '[]');
+let div = document.getElementById('orders');
+if(orders.length==0){div.innerHTML = "<p style='margin-top:15px'>Abhi koi order nahi hai.</p>";return;}
+div.innerHTML = "<h3 style='margin:15px 0'>Total Orders: "+orders.length+"</h3>";
+orders.reverse().forEach((o,i)=>{
+div.innerHTML += '<div class="order"><b>Order '+(orders.length-i)+'</b><br>Name: '+(o.name||'')+'<br>Phone: '+(o.phone||'')+'<br>Address: '+(o.address||'')+'<br>Product: '+(o.product||'')+'<br>Price: '+(o.price||'')+'<br>Time: '+(o.time||'')+'</div>';
+});
+}
+</script>
+</body>
+</html>
