@@ -3,20 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>M J Traders - Little Luxury</title>
+<title>MS Traders - Little Luxury</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
 body{background:#f5f5f5}
-header{background:#000;color:#fff;padding:15px;text-align:center;position:sticky;top:0}
-header h1{font-size:24px;letter-spacing:1px}
-header p{font-size:13px;color:#ccc}
+header{background:#000;color:#fff;padding:15px;text-align:center}
 .hero{background:linear-gradient(135deg,#000,#444);color:#fff;text-align:center;padding:30px 15px}
-.hero h2{font-size:28px;margin-bottom:8px}
-.hero p{color:#ddd;font-size:14px}
 .box{background:#fff;padding:18px;border-radius:12px;max-width:380px;margin:15px auto;box-shadow:0 2px 10px #ddd;text-align:center}
 input{width:92%;padding:12px;margin:7px;border:1px solid #ccc;border-radius:8px}
-.btn{display:block;background:#000;color:#fff;padding:13px;margin:10px auto;border-radius:10px;text-decoration:none;font-weight:bold;border:none;width:95%;cursor:pointer}
-.adminBtn{background:#fff;color:#000;border:2px solid #000}
+.btn{display:block;background:#000;color:#fff;padding:13px;margin:10px auto;border-radius:10px;font-weight:bold;border:none;width:95%;cursor:pointer}
 .products{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px;max-width:600px;margin:auto}
 .card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px #ddd;text-align:center;padding-bottom:12px}
 .card img{width:100%;height:140px;object-fit:cover}
@@ -24,78 +19,20 @@ input{width:92%;padding:12px;margin:7px;border:1px solid #ccc;border-radius:8px}
 .card p{color:#e91e63;font-weight:bold}
 .card button{background:#000;color:#fff;border:none;padding:10px 20px;border-radius:20px;margin-top:8px;cursor:pointer}
 footer{background:#000;color:#aaa;text-align:center;padding:15px;font-size:12px;margin-top:20px}
-.small{font-size:12px;color:#777}
 </style>
 </head>
 <body>
-<header><h1>M J TRADERS</h1><p>Little Luxury - Premium Collection</p></header>
+<header><h1>MS TRADERS</h1><p>Little Luxury</p></header>
 <div class="hero"><h2>Little Luxury</h2><p>Best Quality - Best Price - Fast Delivery</p></div>
-
 <div class="box" id="loginBox">
 <h3>Login / Register</h3>
 <input id="name" placeholder="Apna Naam">
 <input id="phone" placeholder="Mobile Number">
 <input id="pass" type="password" placeholder="Password Banain">
 <button class="btn" onclick="register()">Register / Login</button>
-<p class="small">Login karke hi Order kar sakte hain</p>
-<hr style="margin:10px 0">
-<button class="btn adminBtn" onclick="showAdmin()">Admin Login</button>
 </div>
-
-<div class="box" id="welcomeBox" style="display:none">
-<h3>Welcome <span id="userName"></span> 👋</h3>
-<p>Neeche se Product select karke Order karein</p>
-<button class="btn adminBtn" onclick="logout()">Logout</button>
-</div>
-
+<div class="box" id="welcomeBox" style="display:none"><h3>Welcome <span id="userName"></span></h3><button class="btn" onclick="logout()">Logout</button></div>
 <div class="products">
-<div class="card"><img src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=400"><h3>Luxury Perfume</h3><p>Rs. 2,500</p><button onclick="orderNow('Luxury Perfume')">Order Now</button></div>
-<div class="card"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"><h3>Premium Watch</h3><p>Rs. 4,500</p><button onclick="orderNow('Premium Watch')">Order Now</button></div>
-<div class="card"><img src="https://images.unsplash.com/photo-1627123424574-724758594e93?w=400"><h3>Leather Wallet</h3><p>Rs. 1,800</p><button onclick="orderNow('Leather Wallet')">Order Now</button></div>
-<div class="card"><img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400"><h3>Stylish Sunglasses</h3><p>Rs. 2,200</p><button onclick="orderNow('Sunglasses')">Order Now</button></div>
-<div class="card"><img src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400"><h3>Designer Handbag</h3><p>Rs. 5,500</p><button onclick="orderNow('Handbag')">Order Now</button></div>
-<div class="card"><img src="https://images.unsplash.com/photo-1611312449408-fcece27cdbb7?w=400"><h3>Men T-Shirt</h3><p>Rs. 1,500</p><button onclick="orderNow('T-Shirt')">Order Now</button></div>
-</div>
-
-<div class="box" id="adminBox" style="display:none">
-<h3>Admin Login</h3>
-<input id="adminPass" type="password" placeholder="Admin Password">
-<button class="btn" onclick="adminLogin()">Login</button>
-<p class="small">Password: admin123</p>
-<button class="btn adminBtn" onclick="back()">Wapis</button>
-</div>
-
-<div class="box" id="adminPanel" style="display:none">
-<h3>Admin Panel ✅</h3>
-<p>Sirf aapko Orders dikhenge</p>
-<a class="btn" href="https://docs.google.com/forms/u/0/" target="_blank">Orders Dekhen</a>
-<button class="btn adminBtn" onclick="logout()">Logout</button>
-</div>
-
-<footer>M J Traders © 2026 | WhatsApp: 0300-XXXXXXX</footer>
-<script>
-let logged=false;
-function register(){
-let n=document.getElementById('name').value;
-let p=document.getElementById('phone').value;
-if(n==""||p==""){alert("Naam aur Mobile likhen");return;}
-logged=true;
-document.getElementById('userName').innerText=n;
-document.getElementById('loginBox').style.display='none';
-document.getElementById('welcomeBox').style.display='block';
-}
-function orderNow(product){
-if(!logged){alert("Pehle Login / Register karein");document.getElementById('loginBox').scrollIntoView();return;}
-window.open("https://docs.google.com/forms/d/e/1FAIpQLSdazmM9zYNLOwG01u0A2e7xk9C3zeglUlAGONcZzTuOa05ofQ/viewform","_blank");
-}
-function showAdmin(){document.getElementById('loginBox').style.display='none';document.getElementById('adminBox').style.display='block';}
-function adminLogin(){
-let a=document.getElementById('adminPass').value;
-if(a=="admin123"){document.getElementById('adminBox').style.display='none';document.getElementById('adminPanel').style.display='block';}
-else{alert("Ghalat Password!");}
-}
-function back(){document.getElementById('adminBox').style.display='none';document.getElementById('loginBox').style.display='block';}
-function logout(){location.reload();}
-</script>
-</body>
-</html>
+<div class="card"><img src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=400"><h3>Luxury Perfume</h3><p>Rs. 2,500</p><button onclick="orderNow()">Order Now</button></div>
+<div class="card"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"><h3>Premium Watch</h3><p>Rs. 4,500</p><button onclick="orderNow()">Order Now</button></div>
+<div class="card"><img src="https://images.unsplash.com/photo-1627123424574-724758594e93?w=400
