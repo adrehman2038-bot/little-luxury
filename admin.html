@@ -1,65 +1,18 @@
-<!DOCTYPE html>
-<html lang="ur">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ms Trader - Admin</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
-body{background:#f2f2f2;padding:15px}
-.box{background:#fff;max-width:420px;margin:30px auto;padding:25px;border-radius:15px;box-shadow:0 5px 20px rgba(0,0,0,0.1);text-align:center}
-h2{margin-bottom:5px}
-p{color:#666;font-size:14px;margin-bottom:15px}
-input{width:100%;padding:13px;margin:8px 0;border:1px solid #ddd;border-radius:10px;font-size:16px}
-.btn{width:100%;padding:14px;background:#000;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer}
-.btn2{background:#25D366}
-.order{background:#f9f9f9;border:1px solid #eee;padding:12px;border-radius:10px;margin:10px 0;text-align:left;font-size:14px;line-height:1.6}
-.hidden{display:none}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.logout{color:red;cursor:pointer;font-weight:bold}
-</style>
-</head>
-<body>
-<div class="box" id="loginBox">
-<h2>Ms Trader - Admin</h2>
-<p>Admin Login</p>
-<input type="text" id="user" placeholder="Username">
-<input type="password" id="pass" placeholder="Password">
-<button class="btn" onclick="login()">Login</button>
-</div>
-<div class="box hidden" id="panelBox" style="max-width:600px">
-<div class="top"><h2>Admin Panel</h2><span class="logout" onclick="logout()">Logout</span></div>
-<p id="welcome"></p>
-<button class="btn btn2" onclick="loadOrders()">Orders Dekhen</button>
-<div id="orders"></div>
-</div>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ms Trader UAE</title>
+<style>body{font-family:Arial;margin:0;background:#f5f5f5}header{background:#000;color:#fff;padding:15px;text-align:center}.banner{width:100%;height:180px;object-fit:cover}.card{background:#fff;margin:10px;padding:10px;border-radius:12px;text-align:center}.card img,.card video{width:100%;height:180px;object-fit:cover;border-radius:8px}.desc{font-size:13px;color:#555;line-height:1.4}button{background:#000;color:#fff;border:0;padding:10px 20px;border-radius:20px}.box{background:#fff;margin:10px;padding:15px;border-radius:12px}input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:8px}.social{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px}.social a{text-decoration:none;color:#fff;padding:10px 15px;border-radius:20px;font-size:13px;font-weight:bold}.fb{background:#1877F2}.tk{background:#000}.ig{background:#E1306C}.wa{background:#25D366}.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:#0008;display:none;align-items:center;justify-content:center;z-index:99}.modal>div{background:#fff;width:90%;max-width:350px;padding:20px;border-radius:15px;text-align:center}</style></head><body>
+<header><h1 style="margin:0">Ms Trader</h1><p style="color:#ff1744;font-size:12px;margin:0">LITTLE LUXURY UAE - FREE DELIVERY</p></header>
+<img class="banner" id="bannerImg" src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800">
+<div class="social"><a class="fb" id="linkFB" href="https://facebook.com" target="_blank">📘 Facebook</a><a class="tk" id="linkTK" href="https://tiktok.com" target="_blank">🎵 TikTok</a><a class="ig" id="linkIG" href="https://instagram.com" target="_blank">📸 Instagram</a><a class="wa" href="https://wa.me/923463604853" target="_blank">💬 WhatsApp</a></div>
+<div id="shop"></div>
+<div class="box"><h3>Login / Register</h3><input id="custName" placeholder="Apna Naam"><input id="custPhone" placeholder="Phone Number"><button style="width:100%" onclick="alert('Register Ho Gaya!')">Register Karo</button></div>
+<div style="padding:10px;text-align:center"><button style="width:100%;background:#000" onclick="alert('Payoneer - abrehman16241@gmail.com')">💳 Pay with Payoneer / Card<br><small>abrehman16241@gmail.com</small></button><p>Ms Trader UAE - COD Available - WhatsApp: 03463604853</p></div>
+<div class="modal" id="orderModal"><div><h3 id="oName">Product</h3><p id="oPrice"></p><p id="oDesc" style="font-size:13px;color:#555"></p><button style="width:100%;background:#25D366;margin:5px 0" onclick="confirmOrder('COD')">💵 COD - Cash on Delivery</button><button style="width:100%;background:#000;margin:5px 0" onclick="confirmOrder('Payoneer')">💳 Payoneer / Card</button><button style="width:100%;background:#ddd;color:#000;margin:5px 0" onclick="document.getElementById('orderModal').style.display='none'">❌ Cancel</button></div></div>
 <script>
-let users = {"arehman":"arehman16241","admin":"admin123"};
-function login(){
-let u = document.getElementById('user').value.trim();
-let p = document.getElementById('pass').value.trim();
-if(users[u] && users[u]==p){
-document.getElementById('loginBox').classList.add('hidden');
-document.getElementById('panelBox').classList.remove('hidden');
-document.getElementById('welcome').innerText = "Welcome, "+u;
-loadOrders();
-}else{alert("Ghalat Username ya Password!");}
-}
-function logout(){
-document.getElementById('panelBox').classList.add('hidden');
-document.getElementById('loginBox').classList.remove('hidden');
-document.getElementById('user').value="";
-document.getElementById('pass').value="";
-}
-function loadOrders(){
-let orders = JSON.parse(localStorage.getItem('ms_orders') || '[]');
-let div = document.getElementById('orders');
-if(orders.length==0){div.innerHTML = "<p style='margin-top:15px'>Abhi koi order nahi hai.</p>";return;}
-div.innerHTML = "<h3 style='margin:15px 0'>Total Orders: "+orders.length+"</h3>";
-orders.reverse().forEach((o,i)=>{
-div.innerHTML += '<div class="order"><b>Order '+(orders.length-i)+'</b><br>Name: '+(o.name||'')+'<br>Phone: '+(o.phone||'')+'<br>Address: '+(o.address||'')+'<br>Product: '+(o.product||'')+'<br>Price: '+(o.price||'')+'<br>Time: '+(o.time||'')+'</div>';
-});
-}
-</script>
-</body>
-</html>
+let P=JSON.parse(localStorage.getItem('P3')||'[{"n":"Luxury Perfume","p":99,"d":"Original Perfume - Long Lasting Fragrance, Free Delivery in UAE","i":"https://images.unsplash.com/photo-1541643600914-78b084683601?w=500","t":"img"},{"n":"Smart Watch","p":149,"d":"Smart Watch with Fitness Tracking, Waterproof, 1 Year Warranty","i":"https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500","t":"img"}]');let curOrder=null;
+let L=JSON.parse(localStorage.getItem('LINKS')||'{}');if(L.fb)document.getElementById('linkFB').href=L.fb;if(L.tk)document.getElementById('linkTK').href=L.tk;if(L.ig)document.getElementById('linkIG').href=L.ig;
+if(localStorage.getItem('BN'))document.getElementById('bannerImg').src=localStorage.getItem('BN');
+function show(){document.getElementById('shop').innerHTML=P.map((x,i)=>'<div class="card">'+(x.t=='vid'?'<video controls src="'+x.i+'"></video>':'<img src="'+x.i+'">')+'<h3>'+x.n+'</h3><p class="desc">'+(x.d||'')+'</p><p><b>AED '+x.p+'</b></p><button onclick="openOrder('+i+')">Order Karo</button></div>').join('')}
+function openOrder(i){curOrder=P[i];document.getElementById('oName').innerText=curOrder.n;document.getElementById('oPrice').innerText='AED '+curOrder.p;document.getElementById('oDesc').innerText=curOrder.d||'';document.getElementById('orderModal').style.display='flex'}
+function confirmOrder(type){document.getElementById('orderModal').style.display='none';let cust=document.getElementById('custName').value||'Customer';let ph=document.getElementById('custPhone').value||'No Phone';let O=JSON.parse(localStorage.getItem('ORDERS')||'[]');O.push({n:curOrder.n,p:curOrder.p,pay:type,cust:cust,phone:ph,time:new Date().toLocaleString()});localStorage.setItem('ORDERS',JSON.stringify(O));let msg='🛍️ NAYA ORDER - Ms Trader%0A%0AProduct: '+encodeURIComponent(curOrder.n)+'%0APrice: AED '+curOrder.p+'%0APayment: '+type+'%0ACustomer: '+encodeURIComponent(cust)+'%0APhone: '+encodeURIComponent(ph);window.open('https://wa.me/923463604853?text='+msg,'_blank');alert('✅ Order Ho Gaya! WhatsApp khul raha hai, wahan SEND dabao.')}
+show();
+</script></body></html>
