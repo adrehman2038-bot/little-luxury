@@ -6,6 +6,7 @@
 <div class="card"><img src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=500"><h3>Luxury Perfume</h3><p>AED 99</p><button onclick="alert('Order ke liye WhatsApp karo')">Order Karo</button></div>
 <div class="card"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500"><h3>Smart Watch</h3><p>AED 149</p><button onclick="alert('Order ke liye WhatsApp karo')">Order Karo</button></div>
 <div class="box"><h3>Login / Register</h3><input placeholder="Apna Naam"><input placeholder="Phone Number"><button style="width:100%" onclick="alert('Register Ho Gaya!')">Register Karo</button></div>
-<div class="box"><h3>Admin Login</h3><input id="u" placeholder="admin"><input id="p" type="password" placeholder="Password"><button style="width:100%;background:#ff1744" onclick="if(document.getElementById('u').value=='admin'&&document.getElementById('p').value=='arehman16241'){alert('Admin Login Ho Gaya!')}else{alert('Galat Password')}">Admin Login</button></div>
+<div class="box" id="adminBox" style="display:none"><h3>Admin Login</h3><input id="u" placeholder="admin"><input id="p" type="password" placeholder="Password"><button style="width:100%;background:#ff1744" onclick="if(document.getElementById('u').value=='admin'&&document.getElementById('p').value=='arehman16241'){alert('Admin Login Ho Gaya!')}else{alert('Galat Password')}">Admin Login</button></div>
 <p style="text-align:center;font-size:12px">Ms Trader UAE - Cash on Delivery</p>
+<script>if(location.hash=='#admin'){document.getElementById('adminBox').style.display='block'}</script>
 </body></html>
