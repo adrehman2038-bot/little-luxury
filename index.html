@@ -98,13 +98,11 @@ input{width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-ra
       <button class="btn full" id="bAdd" type="button">Add Banner</button>
     </div>
     <div class="panel">
-      <h3>Payment Settings</h3>
-      <p class="muted">HBL details show only after a customer chooses HBL Bank Transfer. Leave IBAN empty to hide that option.</p>
+      <h3>Payoneer Settings</h3>
+      <p class="muted">This email is shown to customers who choose Payoneer / Card.</p>
       <input id="pPay" type="email" placeholder="Payoneer email">
-      <input id="pTitle" placeholder="HBL account title">
-      <input id="pIban" placeholder="HBL IBAN (e.g. PK00HABB0000000000000000)">
       <p class="err" id="pErr"></p>
-      <button class="btn full" id="pSave" type="button">Save Payment Details</button>
+      <button class="btn full" id="pSave" type="button">Save Payoneer Email</button>
     </div>
     <div class="panel">
       <h3>Orders <span class="muted" id="ordCount"></span></h3>
@@ -137,14 +135,8 @@ input{width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-ra
     <div id="ordOpts">
       <button class="opt" id="oCod" type="button">💵 COD - Cash on Delivery</button>
       <button class="opt" id="oPay" type="button">💳 Payoneer / Card</button>
-      <button class="opt" id="oBank" type="button" style="display:none">🏦 HBL Bank Transfer</button>
+      <button class="opt" id="oBank" type="button">🏦 HBL Bank Transfer</button>
       <button class="opt cancel" id="oCancel" type="button">❌ Cancel</button>
-    </div>
-    <div id="bankBox" style="display:none">
-      <div class="sum" id="bankInfo"></div>
-      <button class="opt" id="bCopy" type="button">📋 Copy IBAN</button>
-      <button class="btn full" id="bSend" type="button">I have paid - Send order on WhatsApp</button>
-      <button class="opt cancel full" id="bBack" type="button" style="margin-top:8px">Back</button>
     </div>
   </div>
 </div>
@@ -260,43 +252,28 @@ $("rGo").onclick=function(){
 function openOrder(){
   var u=window._user, c=u.phone?"Phone: "+u.phone:"Email: "+u.email;
   $("ordSum").innerHTML="<b>"+esc(current.name)+"</b> - AED "+current.price+"<br>"+esc(u.name)+" · "+esc(c);
-  $("ordOpts").style.display="block"; $("bankBox").style.display="none";
   $("ordBox").className="overlay show";
 }
 
-/* ---------- Payment details (set by admin) ---------- */
+/* ---------- Payoneer email (set by admin) ---------- */
 var payInfo=null;
 function payoneerEmail(){ return (payInfo&&payInfo.payoneer)||PAYONEER; }
 function fillPayForm(){
-  if(!payInfo) return;
-  if($("pPay")&&document.activeElement!==$("pPay")) $("pPay").value=payInfo.payoneer||"";
-  if($("pTitle")&&document.activeElement!==$("pTitle")) $("pTitle").value=payInfo.title||"";
-  if($("pIban")&&document.activeElement!==$("pIban")) $("pIban").value=payInfo.iban||"";
+  if(payInfo&&$("pPay")&&document.activeElement!==$("pPay")) $("pPay").value=payInfo.payoneer||"";
 }
 if(fbOn){
   db.collection("settings").doc("payment").onSnapshot(function(d){
     payInfo=d.exists?d.data():null;
-    $("oBank").style.display=(payInfo&&payInfo.iban)?"block":"none";
     $("payLine").innerHTML="💳 Pay with Payoneer / Card<br>"+esc(payoneerEmail());
     fillPayForm();
   },function(){});
 }
-$("oBank").onclick=function(){
-  $("ordOpts").style.display="none"; $("bankBox").style.display="block";
-  $("bankInfo").innerHTML="Bank: HBL<br>Account Title: <b>"+esc(payInfo.title||"")+"</b><br>IBAN: <b>"+esc(payInfo.iban)+"</b><br><br>Send the payment, then tap the button below and share the payment screenshot on WhatsApp.";
-};
-$("bCopy").onclick=function(){
-  try{ navigator.clipboard.writeText(payInfo.iban).then(function(){ $("bCopy").textContent="✅ Copied"; }); }catch(e){ $("bCopy").textContent="Select the IBAN above and copy it"; }
-};
-$("bBack").onclick=function(){ $("ordOpts").style.display="block"; $("bankBox").style.display="none"; };
-$("bSend").onclick=function(){ sendOrder("HBL Bank Transfer"); };
 $("pSave").onclick=function(){
-  var p=$("pPay").value.trim(), t=$("pTitle").value.trim(), i=$("pIban").value.replace(/\s+/g,"").toUpperCase(), err=$("pErr");
+  var p=$("pPay").value.trim(), err=$("pErr");
   err.textContent="";
   if(!fbOn){ err.textContent="Firebase is not set up."; return; }
   if(p && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p)){ err.textContent="Please enter a valid Payoneer email."; return; }
-  if(i && !/^[A-Z]{2}\d{2}[A-Z0-9]{10,30}$/.test(i)){ err.textContent="Please enter a valid IBAN."; return; }
-  db.collection("settings").doc("payment").set({bank:"HBL",title:t,iban:i,payoneer:p})
+  db.collection("settings").doc("payment").set({payoneer:p},{merge:true})
     .then(function(){ err.style.color="#16a34a"; err.textContent="Saved."; setTimeout(function(){ err.textContent=""; err.style.color=""; },2000); })
     .catch(function(){ err.textContent="Save failed. Check Firestore rules."; });
 };
@@ -316,6 +293,7 @@ function sendOrder(method){
 }
 $("oCod").onclick=function(){ sendOrder("COD - Cash on Delivery"); };
 $("oPay").onclick=function(){ alert("Please send your payment to:\n"+payoneerEmail()+"\n\nThen send the payment screenshot on WhatsApp."); sendOrder("Payoneer / Card"); };
+$("oBank").onclick=function(){ sendOrder("HBL Bank Transfer (please send me the account details)"); };
 $("oCancel").onclick=closeAll;
 
 /* ---------- Admin ---------- */
@@ -389,4 +367,19 @@ function renderOrders(snap){
     var done=o.status==="done";
     out.push('<div class="order"><b>'+esc(o.product)+'</b> - AED '+esc(o.price)+' <span class="tag'+(done?' done':'')+'">'+(done?'Done':'New')+'</span><br>'+
       esc(o.name)+' · '+esc(o.phone||o.email)+'<br>'+esc(o.payment)+' · '+esc(t)+'<br>'+
-      '<button class="small ok" data-st="'+d.id+'" data-v="'+(done?'new':'done')+'">'+(don
+      '<button class="small ok" data-st="'+d.id+'" data-v="'+(done?'new':'done')+'">'+(done?'Mark as new':'Mark as done')+'</button> '+
+      '<button class="small" data-od="'+d.id+'">Delete</button></div>');
+  });
+  $("ordCount").textContent=n?"("+n+")":"";
+  $("orderList").innerHTML=out.length?out.join(""):'<p class="muted">No orders yet.</p>';
+  var s=$("orderList").querySelectorAll("[data-st]");
+  for(var k=0;k<s.length;k++) s[k].onclick=function(){ db.collection("orders").doc(this.getAttribute("data-st")).update({status:this.getAttribute("data-v")}); };
+  var x=$("orderList").querySelectorAll("[data-od]");
+  for(var j=0;j<x.length;j++) x[j].onclick=function(){ if(confirm("Delete this order?")) db.collection("orders").doc(this.getAttribute("data-od")).delete(); };
+}
+
+renderUser();
+renderProducts();
+</script>
+</body>
+  </html>
