@@ -60,7 +60,7 @@ footer{background:#000;color:#aaa;text-align:center;padding:14px;font-size:12px;
 <div id="adminLoginBox" class="box hidden">
 <h3>🔐 Admin Login - Sirf Owner</h3>
 <input id="aUser" placeholder="Admin Username">
-<input id="aPass" type="password" placeholder="Admin Password">
+<input id="aPass" placeholder="Admin Password - 1234 likho">
 <button class="btn red" onclick="adminLogin()">Admin Login</button>
 <p class="small" id="adminMsg"></p>
 </div>
@@ -132,9 +132,10 @@ function login(){
  currentUser=u.name;localStorage.setItem('ms_current',currentUser);document.getElementById('authMsg').innerText='✅ Welcome '+u.name;showHome();
 }
 function adminLogin(){
- let u=document.getElementById('aUser').value, p=document.getElementById('aPass').value;
- if(u=='admin'&&p=='ms1234'){currentUser='admin';localStorage.setItem('ms_current','admin');hideAll();document.getElementById('adminPanel').classList.remove('hidden');showOrders();render();}
- else document.getElementById('adminMsg').innerText='❌ Galat Admin Password';
+ let u=document.getElementById('aUser').value.trim().toLowerCase();
+ let p=document.getElementById('aPass').value.trim();
+ if(u=='admin'&&p=='1234'){currentUser='admin';localStorage.setItem('ms_current','admin');hideAll();document.getElementById('adminPanel').classList.remove('hidden');showOrders();render();}
+ else document.getElementById('adminMsg').innerText='❌ Galat - admin / 1234 likho';
 }
 function addProduct(){
  let n=document.getElementById('pName').value, pr=document.getElementById('pPrice').value, im=document.getElementById('pImg').value||'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500';
