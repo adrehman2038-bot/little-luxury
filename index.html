@@ -281,7 +281,7 @@ function sendOrder(method){
   var u=window._user;
   if(fbOn){
     db.collection("siteOrders").add({
-      product:current.name, price:current.price, payment:method,
+      product:current.name, price:current.price, img:current.img||"", payment:method,
       name:u.name, phone:u.phone||"", email:u.email||"",
       status:"new", createdAt:firebase.firestore.FieldValue.serverTimestamp()
     }).catch(function(){});
@@ -364,7 +364,7 @@ function renderOrders(snap){
     var o=d.data(); n++;
     var t=o.createdAt&&o.createdAt.toDate?o.createdAt.toDate().toLocaleString():"just now";
     var done=o.status==="done";
-    out.push('<div class="order"><b>'+esc(o.product)+'</b> - AED '+esc(o.price)+' <span class="tag'+(done?' done':'')+'">'+(done?'Done':'New')+'</span><br>'+
+    out.push('<div class="order">'+(o.img?'<img src="'+esc(o.img)+'" alt="" style="float:right;width:64px;height:64px;object-fit:cover;border-radius:6px;margin-left:8px">':'')+'<b>'+esc(o.product)+'</b> - AED '+esc(o.price)+' <span class="tag'+(done?' done':'')+'">'+(done?'Done':'New')+'</span><br>'+
       esc(o.name)+' · '+esc(o.phone||o.email)+'<br>'+esc(o.payment)+' · '+esc(t)+'<br>'+
       '<button class="small ok" data-st="'+d.id+'" data-v="'+(done?'new':'done')+'">'+(done?'Mark as new':'Mark as done')+'</button> '+
       '<button class="small" data-od="'+d.id+'">Delete</button></div>');
