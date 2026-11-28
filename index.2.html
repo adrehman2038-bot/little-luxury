@@ -1,1 +1,8 @@
-
+"Order Now" dabane par jo "Confirm Your Order" popup khulta hai, us mein payment buttons se pehle ye fields add karo (sab zaroori): Full name, Phone/WhatsApp number, City, Country (default "UAE"), Full address.
+Agar customer pehle register ho chuka hai to ye fields pehle se bhari hon (name, phone, city, country, address). Order ke baad ye details localStorage mein yaad rakho taake agli baar khud bhar jayen.
+Fields ki validation karo (name 2+ letters, phone 9-15 digits, city, country, address 6+ characters). Galat hone par popup ke andar laal error dikhao.
+Order save karte waqt Firestore "siteOrders" collection mein name, phone, city, country, address, product, price, img, payment, status:"new", createdAt save karo.
+WhatsApp message mein Product, Price, Payment, Name, Phone, City, Country, Address sab likho.
+Admin panel ki Orders list mein har order ke neeche address, city, country dikhao.
+Popup chhoti screen par scroll ho sake (max-height 92vh, overflow auto).
+Payoneer wale button par pehle fields validate karo, phir payment email wala alert dikhao.
