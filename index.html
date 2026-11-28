@@ -1,22 +1,73 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ms Trader - Little Luxury UAE</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#f5f5f5}
-header{background:#000;color:#fff;padding:14px;text-align:center;position:sticky;top:0;z-index:10}
-header h1{font-size:22px}
-header p{font-size:12px;color:#ff1744}
-.top{display:flex;gap:8px;justify-content:center;padding:10px;flex-wrap:wrap}
-.top button{padding:8px 14px;border:none;border-radius:20px;background:#000;color:#fff;cursor:pointer}
-.top button.red{background:#ff1744}
-.hero{background:linear-gradient(135deg,#ff1744,#000);color:#fff;padding:20px;text-align:center}
-.hero h2{font-size:20px}
-.box{background:#fff;padding:16px;border-radius:12px;margin:12px}
-input{width:100%;padding:12px;margin:7px 0;border:1px solid #ddd;border-radius:8px}
-.btn{display:block;width:100%;padding:12px;background:#000;color:#fff;border:none;border-radius:8px;margin-top:8px;cursor:pointer}
-.btn.red{background:#ff1744}
-.products{display:grid;grid-template-columns:1
+<script>
+let products = JSON.parse(localStorage.getItem('ms_products')||'[]');
+if(products.length==0){
+ products=[
+  {name:"Luxury Perfume",price:99,img:"https://images.unsplash.com/photo-1541643600914-78b084683601?w=500"},
+  {name:"Smart Watch",price:149,img:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500"},
+  {name:"Hand Bag",price:129,img:"https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500"},
+  {name:"Sunglasses",price:59,img:"https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500"}
+ ];
+ localStorage.setItem('ms_products',JSON.stringify(products));
+}
+let cart = JSON.parse(localStorage.getItem('ms_cart')||'[]');
+let users = JSON.parse(localStorage.getItem('ms_users')||'[]');
+let orders = JSON.parse(localStorage.getItem('ms_orders')||'[]');
+let currentUser = localStorage.getItem('ms_current')||'';
+function save(){localStorage.setItem('ms_products',JSON.stringify(products));localStorage.setItem('ms_cart',JSON.stringify(cart));localStorage.setItem('ms_users',JSON.stringify(users));localStorage.setItem('ms_orders',JSON.stringify(orders));}
+function render(){
+ let q=(document.getElementById('search').value||'').toLowerCase();
+ let h='';
+ products.forEach((p,i)=>{
+  if(p.name.toLowerCase().includes(q)){
+   h+=`<div class="card"><img src="${p.img}"><h3>${p.name}</h3><p>AED ${p.price}</p><button onclick="addCart(${i})">Add to Cart</button>${currentUser=='admin'?`<br><button style="background:red" onclick="delProduct(${i})">Delete</button>`:''}</div>`;
+  }
+ });
+ document.getElementById('list').innerHTML=h||'<p style="text-align:center">Koi product nahi mila</p>';
+ document.getElementById('cartCount').innerText=cart.length;
+}
+function showHome(){hideAll();document.getElementById('home').classList.remove('hidden');}
+function showAuth(){hideAll();document.getElementById('authBox').classList.remove('hidden');}
+function showAdminLogin(){hideAll();document.getElementById('adminLoginBox').classList.remove('hidden');}
+function showCart(){hideAll();document.getElementById('cartBox').style.display='block';let h='';let t=0;cart.forEach((c,i)=>{t+=c.price;h+=`<p>${c.name} - AED ${c.price} <button onclick="delCart(${i})">❌</button></p>`});document.getElementById('cartItems').innerHTML=h||'Cart khali hai';if(cart.length)document.getElementById('cartItems').innerHTML+=`<b>Total: AED ${t}</b>`;}
+function hideAll(){document.getElementById('home').classList.add('hidden');document.getElementById('authBox').classList.add('hidden');document.getElementById('adminLoginBox').classList.add('hidden');document.getElementById('adminPanel').classList.add('hidden');document.getElementById('cartBox').style.display='none';}
+function register(){
+ let n=document.getElementById('uName').value, ph=document.getElementById('uPhone').value, pw=document.getElementById('uPass').value;
+ if(!n||!ph||!pw){document.getElementById('authMsg').innerText='Sab khane bharo!';return;}
+ if(users.find(u=>u.phone==ph)){document.getElementById('authMsg').innerText='Ye number pehle se registered hai, Login karo';return;}
+ users.push({name:n,phone:ph,pass:pw});save();document.getElementById('authMsg').innerText='✅ Register ho gaya! Ab Login dabao';
+}
+function login(){
+ let ph=document.getElementById('uPhone').value, pw=document.getElementById('uPass').value;
+ let u=users.find(u=>u.phone==ph&&u.pass==pw);
+ if(!u){document.getElementById('authMsg').innerText='❌ Galat number ya password';return;}
+ currentUser=u.name;localStorage.setItem('ms_current',currentUser);document.getElementById('authMsg').innerText='✅ Welcome '+u.name;showHome();
+}
+function adminLogin(){
+ let u=document.getElementById('aUser').value.trim().toLowerCase();
+ let p=document.getElementById('aPass').value.trim();
+ if(u=='admin'&&p=='arehman16241'){currentUser='admin';localStorage.setItem('ms_current','admin');hideAll();document.getElementById('adminPanel').classList.remove('hidden');showOrders();render();}
+ else document.getElementById('adminMsg').innerText='❌ Galat - admin / arehman16241 likho';
+}
+function addProduct(){
+ let n=document.getElementById('pName').value, pr=document.getElementById('pPrice').value, im=document.getElementById('pImg').value||'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500';
+ if(!n||!pr){alert('Naam aur Price likho');return;}
+ products.push({name:n,price:Number(pr),img:im});save();render();alert('Product Add ho gaya!');
+}
+function delProduct(i){if(confirm('Delete karna hai?')){products.splice(i,1);save();render();}}
+function addCart(i){cart.push(products[i]);save();render();alert('Cart me add ho gaya');}
+function delCart(i){cart.splice(i,1);save();render();showCart();}
+function checkout(){
+ if(cart.length==0){alert('Cart khali hai');return;}
+ if(!currentUser){alert('Pehle Login / Register karo');showAuth();return;}
+ let addr=document.getElementById('cAddress').value;if(!addr){alert('Address likho');return;}
+ let total=cart.reduce((a,b)=>a+b.price,0);
+ orders.push({user:currentUser,items:cart.map(c=>c.name).join(','),total:total,address:addr,date:new Date().toLocaleString()});
+ cart=[];save();render();document.getElementById('orderMsg').innerText='✅ Order ho gaya! Shukriya '+currentUser;showOrders();
+}
+function showOrders(){let h='';orders.forEach(o=>{h+=`<div style="border:1px solid #ddd;padding:8px;margin:5px;border-radius:8px"><b>${o.user}</b> - AED ${o.total}<br>${o.items}<br>${o.address}<br><small>${o.date}</small></div>`});document.getElementById('orderList').innerHTML=h||'Abhi koi order nahi';}
+function logout(){currentUser='';localStorage.removeItem('ms_current');showHome();}
+render();showOrders();
+if(window.location.hash=='#admin'){showAdminLogin();}
+</script>
+</body>
+</html>
