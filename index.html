@@ -155,12 +155,11 @@ var PAYONEER = "abrehman16241@gmail.com";
 var ADMIN_EMAIL = "abrehman16241@gmail.com";
 var DEFAULT_BANNER = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800";
 
-// Paste your Firebase web app config here (see SETUP.txt)
 var FIREBASE_CONFIG = {
-  apiKey: "PASTE_API_KEY",
-  authDomain: "PASTE",
-  projectId: "PASTE",
-  appId: "PASTE"
+  apiKey: "AIzaSyAc6PuYy9CD5LcDAuM_Exl_WDFS4c_LEDA",
+  authDomain: "ms-trader-6d3ed.firebaseapp.com",
+  projectId: "ms-trader-6d3ed",
+  appId: "1:160511447025:web:d80fcfbfcfe4c8758bfe50"
 };
 /* ============================================== */
 
@@ -281,7 +280,7 @@ $("pSave").onclick=function(){
 function sendOrder(method){
   var u=window._user;
   if(fbOn){
-    db.collection("orders").add({
+    db.collection("siteOrders").add({
       product:current.name, price:current.price, payment:method,
       name:u.name, phone:u.phone||"", email:u.email||"",
       status:"new", createdAt:firebase.firestore.FieldValue.serverTimestamp()
@@ -301,7 +300,7 @@ function route(){
   var admin = location.hash==="#admin";
   $("store").style.display=admin?"none":"block";
   $("admin").style.display=admin?"block":"none";
-  if(admin && !fbOn){ $("loginPanel").innerHTML='<h3>Admin Login</h3><p class="muted">Firebase is not set up yet. Follow SETUP.txt and paste your config in index.html.</p>'; }
+  if(admin && !fbOn){ $("loginPanel").innerHTML='<h3>Admin Login</h3><p class="muted">Firebase is not set up yet.</p>'; }
 }
 window.onhashchange=route; route();
 
@@ -315,7 +314,7 @@ if(fbOn){
     if(unsubOrders){ unsubOrders(); unsubOrders=null; }
     if(ok){
       renderBannerList();
-      unsubOrders=db.collection("orders").orderBy("createdAt","desc").onSnapshot(renderOrders,function(){ $("orderList").innerHTML='<p class="err">Could not load orders. Check Firestore rules.</p>'; });
+      unsubOrders=db.collection("siteOrders").orderBy("createdAt","desc").onSnapshot(renderOrders,function(){ $("orderList").innerHTML='<p class="err">Could not load orders. Check Firestore rules.</p>'; });
     }
   });
   $("aGo").onclick=function(){
@@ -373,13 +372,13 @@ function renderOrders(snap){
   $("ordCount").textContent=n?"("+n+")":"";
   $("orderList").innerHTML=out.length?out.join(""):'<p class="muted">No orders yet.</p>';
   var s=$("orderList").querySelectorAll("[data-st]");
-  for(var k=0;k<s.length;k++) s[k].onclick=function(){ db.collection("orders").doc(this.getAttribute("data-st")).update({status:this.getAttribute("data-v")}); };
+  for(var k=0;k<s.length;k++) s[k].onclick=function(){ db.collection("siteOrders").doc(this.getAttribute("data-st")).update({status:this.getAttribute("data-v")}); };
   var x=$("orderList").querySelectorAll("[data-od]");
-  for(var j=0;j<x.length;j++) x[j].onclick=function(){ if(confirm("Delete this order?")) db.collection("orders").doc(this.getAttribute("data-od")).delete(); };
+  for(var j=0;j<x.length;j++) x[j].onclick=function(){ if(confirm("Delete this order?")) db.collection("siteOrders").doc(this.getAttribute("data-od")).delete(); };
 }
 
 renderUser();
 renderProducts();
 </script>
 </body>
-  </html>
+</html>
