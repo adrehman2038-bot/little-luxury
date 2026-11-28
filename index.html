@@ -1,18 +1,392 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ms Trader UAE</title>
-<style>body{font-family:Arial;margin:0;background:#f5f5f5}header{background:#000;color:#fff;padding:15px;text-align:center}.banner{width:100%;height:180px;object-fit:cover}.card{background:#fff;margin:10px;padding:10px;border-radius:12px;text-align:center}.card img,.card video{width:100%;height:180px;object-fit:cover;border-radius:8px}button{background:#000;color:#fff;border:0;padding:10px 20px;border-radius:20px}.box{background:#fff;margin:10px;padding:15px;border-radius:12px}input{width:100%;padding:11px;margin:6px 0;border:1px solid #ddd;border-radius:8px}.social{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px}.social a{text-decoration:none;color:#fff;padding:10px 15px;border-radius:20px;font-size:13px;font-weight:bold}.fb{background:#1877F2}.tk{background:#000}.ig{background:#E1306C}.wa{background:#25D366}.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:#0008;display:none;align-items:center;justify-content:center;z-index:99}.modal>div{background:#fff;width:90%;max-width:350px;padding:20px;border-radius:15px;text-align:center}</style></head><body>
-<header><h1 style="margin:0">Ms Trader</h1><p style="color:#ff1744;font-size:12px;margin:0">LITTLE LUXURY UAE - FREE DELIVERY</p></header>
-<img class="banner" id="bannerImg" src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800">
-<div class="social"><a class="fb" id="linkFB" href="https://facebook.com" target="_blank">📘 Facebook</a><a class="tk" id="linkTK" href="https://tiktok.com" target="_blank">🎵 TikTok</a><a class="ig" id="linkIG" href="https://instagram.com" target="_blank">📸 Instagram</a><a class="wa" href="https://wa.me/923463604853" target="_blank">💬 WhatsApp</a></div>
-<div id="shop"></div>
-<div class="box"><h3>Login / Register</h3><input id="custName" placeholder="Apna Naam"><input id="custPhone" placeholder="Phone Number"><button style="width:100%" onclick="alert('Register Ho Gaya!')">Register Karo</button></div>
-<div style="padding:10px;text-align:center"><button style="width:100%;background:#000" onclick="alert('Payoneer - abrehman16241@gmail.com')">💳 Pay with Payoneer / Card<br><small>abrehman16241@gmail.com</small></button><p>Ms Trader UAE - COD Available - WhatsApp: 03463604853</p></div>
-<div class="modal" id="orderModal"><div><h3 id="oName">Product</h3><p id="oPrice"></p><button style="width:100%;background:#25D366;margin:5px 0" onclick="confirmOrder('COD')">💵 COD - Cash on Delivery</button><button style="width:100%;background:#000;margin:5px 0" onclick="confirmOrder('Payoneer')">💳 Payoneer / Card</button><button style="width:100%;background:#ddd;color:#000;margin:5px 0" onclick="document.getElementById('orderModal').style.display='none'">❌ Cancel</button></div></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ms Trader UAE</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Roboto,Arial,sans-serif;background:#f5f5f5;color:#111}
+header{background:#000;color:#fff;text-align:center;padding:10px}
+header h1{margin:0;font-size:22px}
+header small{color:#e11d48;font-size:10px}
+.slider{position:relative;width:100%;height:150px;overflow:hidden;background:#222}
+.slider img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s}
+.slider img.on{opacity:1}
+.dots{position:absolute;bottom:6px;left:0;right:0;text-align:center}
+.dots span{display:inline-block;width:7px;height:7px;margin:0 3px;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer}
+.dots span.on{background:#fff}
+.social{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:12px}
+.social a{color:#fff;text-decoration:none;font-size:11px;font-weight:700;padding:7px 12px;border-radius:14px}
+.fb{background:#1877f2}.tt{background:#000}.ig{background:#e1306c}.wa{background:#25d366}
+.card{background:#fff;margin:0 8px 10px;padding:8px;border-radius:10px;text-align:center}
+.card img{width:100%;height:150px;object-fit:cover;border-radius:6px}
+.card h3{margin:10px 0 4px;font-size:15px}
+.card p{margin:4px 0 10px;font-size:13px}
+button{font:inherit;cursor:pointer}
+.btn{background:#000;color:#fff;border:0;border-radius:14px;padding:8px 18px;font-size:12px}
+.pay{display:block;background:#000;color:#fff;margin:0 8px;padding:10px;border-radius:20px;text-align:center;font-size:11px}
+.foot{text-align:center;font-size:12px;padding:12px}
+.foot a{color:#999;font-size:10px;text-decoration:none}
+.user{font-size:11px;text-align:right;padding:0 12px 6px;color:#444}
+.user button{background:none;border:0;color:#e11d48;text-decoration:underline;font-size:11px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
+.overlay.show{display:flex}
+.modal{background:#fff;border-radius:12px;padding:18px;width:100%;max-width:380px}
+.modal h2{margin:0 0 4px;font-size:17px}
+.modal .sub{margin:0 0 12px;font-size:12px;color:#555}
+.tabs{display:flex;gap:6px;margin-bottom:10px}
+.tabs button{flex:1;padding:8px;border:1px solid #ccc;background:#fff;border-radius:8px;font-size:12px}
+.tabs button.on{background:#000;color:#fff;border-color:#000}
+input{width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-radius:8px;font-size:14px}
+.full{width:100%;padding:11px;border-radius:20px;margin-top:4px;font-size:13px}
+.err{color:#e11d48;font-size:12px;min-height:16px;margin:0 0 6px}
+.opt{width:100%;padding:12px;margin-bottom:8px;border-radius:10px;border:1px solid #000;background:#fff;font-size:13px}
+.opt.cancel{border-color:#ccc;color:#b00020}
+.sum{background:#f5f5f5;border-radius:8px;padding:8px;font-size:12px;margin-bottom:10px}
+#admin{display:none;padding:10px}
+.panel{background:#fff;border-radius:10px;padding:12px;margin-bottom:10px}
+.panel h3{margin:0 0 8px;font-size:15px}
+.brow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.brow img{width:110px;height:50px;object-fit:cover;border-radius:6px}
+.small{font-size:11px;padding:6px 10px;border-radius:10px;border:1px solid #b00020;background:#fff;color:#b00020}
+.ok{border-color:#16a34a;color:#16a34a}
+.order{border-top:1px solid #eee;padding:8px 0;font-size:12px;line-height:1.6}
+.tag{display:inline-block;padding:1px 8px;border-radius:8px;font-size:10px;background:#fde68a}
+.tag.done{background:#bbf7d0}
+.muted{color:#777;font-size:12px}
+</style>
+</head>
+<body>
+
+<div id="store">
+  <header><h1>Ms Trader</h1><small>LITTLE LUXURY UAE - FREE DELIVERY</small></header>
+  <div class="slider" id="slider"></div>
+
+  <div class="social">
+    <a class="fb" href="https://facebook.com" target="_blank">📘 Facebook</a>
+    <a class="tt" href="https://tiktok.com" target="_blank">🎵 TikTok</a>
+    <a class="ig" href="https://instagram.com" target="_blank">📸 Instagram</a>
+    <a class="wa" href="https://wa.me/923463604853" target="_blank">💬 WhatsApp</a>
+  </div>
+
+  <div class="user" id="userBar" style="display:none"></div>
+  <div id="products"></div>
+
+  <div class="pay" id="payLine">💳 Pay with Payoneer / Card<br>abrehman16241@gmail.com</div>
+  <div class="foot">Ms Trader UAE - COD Available - WhatsApp: 03463604853<br><a href="#admin">Admin</a></div>
+</div>
+
+<div id="admin">
+  <div class="panel"><a href="#" style="font-size:12px">← Back to store</a></div>
+
+  <div class="panel" id="loginPanel">
+    <h3>Admin Login</h3>
+    <input id="aMail" type="email" placeholder="Admin email">
+    <input id="aPass" type="password" placeholder="Password">
+    <p class="err" id="aErr"></p>
+    <button class="btn full" id="aGo" type="button">Login</button>
+  </div>
+
+  <div id="adminBody" style="display:none">
+    <div class="panel">
+      <h3>Banners</h3>
+      <p class="muted">Banners change automatically every 5 seconds on the store.</p>
+      <div id="bannerList"></div>
+      <input id="bFile" type="file" accept="image/*">
+      <p class="err" id="bErr"></p>
+      <button class="btn full" id="bAdd" type="button">Add Banner</button>
+    </div>
+    <div class="panel">
+      <h3>Payment Settings</h3>
+      <p class="muted">HBL details show only after a customer chooses HBL Bank Transfer. Leave IBAN empty to hide that option.</p>
+      <input id="pPay" type="email" placeholder="Payoneer email">
+      <input id="pTitle" placeholder="HBL account title">
+      <input id="pIban" placeholder="HBL IBAN (e.g. PK00HABB0000000000000000)">
+      <p class="err" id="pErr"></p>
+      <button class="btn full" id="pSave" type="button">Save Payment Details</button>
+    </div>
+    <div class="panel">
+      <h3>Orders <span class="muted" id="ordCount"></span></h3>
+      <div id="orderList"><p class="muted">No orders yet.</p></div>
+    </div>
+    <button class="opt cancel" id="aOut" type="button">Logout</button>
+  </div>
+</div>
+
+<div class="overlay" id="regBox">
+  <div class="modal">
+    <h2>Register First</h2>
+    <p class="sub">Please register with your Gmail or phone number to place an order.</p>
+    <input id="rName" placeholder="Your name">
+    <div class="tabs">
+      <button id="tabPhone" class="on" type="button">📱 Phone Number</button>
+      <button id="tabMail" type="button">✉️ Gmail</button>
+    </div>
+    <input id="rContact" type="tel" placeholder="Phone number (e.g. 0501234567)">
+    <p class="err" id="rErr"></p>
+    <button class="btn full" id="rGo" type="button">Register &amp; Continue</button>
+    <button class="opt cancel full" id="rCancel" type="button" style="margin-top:8px">Cancel</button>
+  </div>
+</div>
+
+<div class="overlay" id="ordBox">
+  <div class="modal">
+    <h2>Confirm Your Order</h2>
+    <div class="sum" id="ordSum"></div>
+    <div id="ordOpts">
+      <button class="opt" id="oCod" type="button">💵 COD - Cash on Delivery</button>
+      <button class="opt" id="oPay" type="button">💳 Payoneer / Card</button>
+      <button class="opt" id="oBank" type="button" style="display:none">🏦 HBL Bank Transfer</button>
+      <button class="opt cancel" id="oCancel" type="button">❌ Cancel</button>
+    </div>
+    <div id="bankBox" style="display:none">
+      <div class="sum" id="bankInfo"></div>
+      <button class="opt" id="bCopy" type="button">📋 Copy IBAN</button>
+      <button class="btn full" id="bSend" type="button">I have paid - Send order on WhatsApp</button>
+      <button class="opt cancel full" id="bBack" type="button" style="margin-top:8px">Back</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-let P=JSON.parse(localStorage.getItem('P3')||'[{"n":"Luxury Perfume","p":99,"i":"https://images.unsplash.com/photo-1541643600914-78b084683601?w=500","t":"img"},{"n":"Smart Watch","p":149,"i":"https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500","t":"img"}]');let curOrder=null;
-let L=JSON.parse(localStorage.getItem('LINKS')||'{}');if(L.fb)document.getElementById('linkFB').href=L.fb;if(L.tk)document.getElementById('linkTK').href=L.tk;if(L.ig)document.getElementById('linkIG').href=L.ig;
-if(localStorage.getItem('BN'))document.getElementById('bannerImg').src=localStorage.getItem('BN');
-function show(){document.getElementById('shop').innerHTML=P.map((x,i)=>'<div class="card">'+(x.t=='vid'?'<video controls src="'+x.i+'"></video>':'<img src="'+x.i+'">')+'<h3>'+x.n+'</h3><p>AED '+x.p+'</p><button onclick="openOrder('+i+')">Order Karo</button></div>').join('')}
-function openOrder(i){curOrder=P[i];document.getElementById('oName').innerText=curOrder.n;document.getElementById('oPrice').innerText='AED '+curOrder.p;document.getElementById('orderModal').style.display='flex'}
-function confirmOrder(type){document.getElementById('orderModal').style.display='none';let cust=document.getElementById('custName').value||'Customer';let ph=document.getElementById('custPhone').value||'No Phone';let O=JSON.parse(localStorage.getItem('ORDERS')||'[]');O.push({n:curOrder.n,p:curOrder.p,pay:type,cust:cust,phone:ph,time:new Date().toLocaleString()});localStorage.setItem('ORDERS',JSON.stringify(O));let msg='🛍️ NAYA ORDER - Ms Trader%0A%0AProduct: '+encodeURIComponent(curOrder.n)+'%0APrice: AED '+curOrder.p+'%0APayment: '+type+'%0ACustomer: '+encodeURIComponent(cust)+'%0APhone: '+encodeURIComponent(ph);window.open('https://wa.me/923463604853?text='+msg,'_blank');alert('✅ Order Ho Gaya! WhatsApp khul raha hai, wahan SEND dabao.')}
-show();
-</script></body></html>
+/* ============ SETTINGS (edit here) ============ */
+var PRODUCTS = [
+  {name:"Luxury Perfume", price:99,  img:"https://images.unsplash.com/photo-1541643600914-78b084683601?w=600"},
+  {name:"Smart Watch",    price:149, img:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600"}
+];
+var WHATSAPP = "923463604853";
+var PAYONEER = "abrehman16241@gmail.com";
+var ADMIN_EMAIL = "abrehman16241@gmail.com";
+var DEFAULT_BANNER = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800";
+
+// Paste your Firebase web app config here (see SETUP.txt)
+var FIREBASE_CONFIG = {
+  apiKey: "PASTE_API_KEY",
+  authDomain: "PASTE",
+  projectId: "PASTE",
+  appId: "PASTE"
+};
+/* ============================================== */
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+
+var db=null, auth=null;
+var fbOn = typeof firebase!=="undefined" && !/^PASTE/.test(FIREBASE_CONFIG.apiKey);
+if(fbOn){ try{ firebase.initializeApp(FIREBASE_CONFIG); db=firebase.firestore(); auth=firebase.auth(); }catch(e){ fbOn=false; } }
+
+/* ---------- Banner slider ---------- */
+var idx=0, timer=null, bannerDocs=[];
+function renderSlider(urls){
+  if(!urls.length) urls=[DEFAULT_BANNER];
+  var h="", d="";
+  urls.forEach(function(u,i){ h+='<img src="'+esc(u)+'" alt="Banner" class="'+(i===0?'on':'')+'">'; d+='<span class="'+(i===0?'on':'')+'" data-i="'+i+'"></span>'; });
+  $("slider").innerHTML = h + (urls.length>1 ? '<div class="dots">'+d+'</div>' : '');
+  idx=0; clearInterval(timer);
+  var dots=$("slider").querySelectorAll(".dots span");
+  for(var k=0;k<dots.length;k++) dots[k].onclick=function(){ show(+this.getAttribute("data-i")); restart(); };
+  if(urls.length>1) restart();
+}
+function show(i){
+  var im=$("slider").querySelectorAll("img"), dt=$("slider").querySelectorAll(".dots span");
+  idx=(i+im.length)%im.length;
+  for(var k=0;k<im.length;k++){ im[k].className = k===idx?"on":""; if(dt[k]) dt[k].className = k===idx?"on":""; }
+}
+function restart(){ clearInterval(timer); timer=setInterval(function(){ show(idx+1); },5000); }
+
+renderSlider([]);
+if(fbOn){
+  db.collection("banners").orderBy("order").onSnapshot(function(snap){
+    bannerDocs=[]; snap.forEach(function(d){ bannerDocs.push({id:d.id, img:d.data().img}); });
+    renderSlider(bannerDocs.map(function(b){return b.img;}));
+    renderBannerList();
+  }, function(){});
+}
+
+/* ---------- Products ---------- */
+function renderProducts(){
+  var html="";
+  PRODUCTS.forEach(function(p,i){
+    html+='<div class="card"><img src="'+esc(p.img)+'" alt="'+esc(p.name)+'"><h3>'+esc(p.name)+'</h3><p>AED '+p.price+'</p><button class="btn" data-i="'+i+'">Order Now</button></div>';
+  });
+  $("products").innerHTML=html;
+  var b=$("products").querySelectorAll("button");
+  for(var k=0;k<b.length;k++) b[k].onclick=function(){ startOrder(PRODUCTS[+this.getAttribute("data-i")]); };
+}
+
+/* ---------- Customer registration ---------- */
+function getUser(){ try{ return JSON.parse(localStorage.getItem("mstrader_user")); }catch(e){ return null; } }
+function saveUser(u){ try{ localStorage.setItem("mstrader_user",JSON.stringify(u)); }catch(e){} window._user=u; }
+function clearUser(){ try{ localStorage.removeItem("mstrader_user"); }catch(e){} window._user=null; }
+window._user=getUser();
+
+function renderUser(){
+  var u=window._user, bar=$("userBar");
+  if(u){ bar.style.display="block"; bar.innerHTML='Hi, '+esc(u.name)+' · <button id="logout">Logout</button>'; $("logout").onclick=function(){ clearUser(); renderUser(); }; }
+  else bar.style.display="none";
+}
+
+var current=null, mode="phone";
+function startOrder(p){ current=p; if(window._user) openOrder(); else openReg(); }
+function setMode(m){
+  mode=m; $("tabPhone").className=m==="phone"?"on":""; $("tabMail").className=m==="mail"?"on":"";
+  var f=$("rContact"); f.value=""; f.type=m==="phone"?"tel":"email";
+  f.placeholder=m==="phone"?"Phone number (e.g. 0501234567)":"Gmail (e.g. name@gmail.com)";
+  $("rErr").textContent="";
+}
+function openReg(){ setMode("phone"); $("rName").value=""; $("regBox").className="overlay show"; }
+function closeAll(){ $("regBox").className="overlay"; $("ordBox").className="overlay"; }
+$("tabPhone").onclick=function(){ setMode("phone"); };
+$("tabMail").onclick=function(){ setMode("mail"); };
+$("rCancel").onclick=closeAll;
+$("rGo").onclick=function(){
+  var name=$("rName").value.trim(), val=$("rContact").value.trim(), err=$("rErr");
+  if(name.length<2){ err.textContent="Please enter your name."; return; }
+  if(mode==="phone"){
+    if(!/^\d{9,15}$/.test(val.replace(/[\s\-\+\(\)]/g,""))){ err.textContent="Please enter a valid phone number."; return; }
+    saveUser({name:name,phone:val});
+  } else {
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)){ err.textContent="Please enter a valid Gmail/email."; return; }
+    saveUser({name:name,email:val});
+  }
+  renderUser(); $("regBox").className="overlay"; openOrder();
+};
+
+/* ---------- Order ---------- */
+function openOrder(){
+  var u=window._user, c=u.phone?"Phone: "+u.phone:"Email: "+u.email;
+  $("ordSum").innerHTML="<b>"+esc(current.name)+"</b> - AED "+current.price+"<br>"+esc(u.name)+" · "+esc(c);
+  $("ordOpts").style.display="block"; $("bankBox").style.display="none";
+  $("ordBox").className="overlay show";
+}
+
+/* ---------- Payment details (set by admin) ---------- */
+var payInfo=null;
+function payoneerEmail(){ return (payInfo&&payInfo.payoneer)||PAYONEER; }
+function fillPayForm(){
+  if(!payInfo) return;
+  if($("pPay")&&document.activeElement!==$("pPay")) $("pPay").value=payInfo.payoneer||"";
+  if($("pTitle")&&document.activeElement!==$("pTitle")) $("pTitle").value=payInfo.title||"";
+  if($("pIban")&&document.activeElement!==$("pIban")) $("pIban").value=payInfo.iban||"";
+}
+if(fbOn){
+  db.collection("settings").doc("payment").onSnapshot(function(d){
+    payInfo=d.exists?d.data():null;
+    $("oBank").style.display=(payInfo&&payInfo.iban)?"block":"none";
+    $("payLine").innerHTML="💳 Pay with Payoneer / Card<br>"+esc(payoneerEmail());
+    fillPayForm();
+  },function(){});
+}
+$("oBank").onclick=function(){
+  $("ordOpts").style.display="none"; $("bankBox").style.display="block";
+  $("bankInfo").innerHTML="Bank: HBL<br>Account Title: <b>"+esc(payInfo.title||"")+"</b><br>IBAN: <b>"+esc(payInfo.iban)+"</b><br><br>Send the payment, then tap the button below and share the payment screenshot on WhatsApp.";
+};
+$("bCopy").onclick=function(){
+  try{ navigator.clipboard.writeText(payInfo.iban).then(function(){ $("bCopy").textContent="✅ Copied"; }); }catch(e){ $("bCopy").textContent="Select the IBAN above and copy it"; }
+};
+$("bBack").onclick=function(){ $("ordOpts").style.display="block"; $("bankBox").style.display="none"; };
+$("bSend").onclick=function(){ sendOrder("HBL Bank Transfer"); };
+$("pSave").onclick=function(){
+  var p=$("pPay").value.trim(), t=$("pTitle").value.trim(), i=$("pIban").value.replace(/\s+/g,"").toUpperCase(), err=$("pErr");
+  err.textContent="";
+  if(!fbOn){ err.textContent="Firebase is not set up."; return; }
+  if(p && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p)){ err.textContent="Please enter a valid Payoneer email."; return; }
+  if(i && !/^[A-Z]{2}\d{2}[A-Z0-9]{10,30}$/.test(i)){ err.textContent="Please enter a valid IBAN."; return; }
+  db.collection("settings").doc("payment").set({bank:"HBL",title:t,iban:i,payoneer:p})
+    .then(function(){ err.style.color="#16a34a"; err.textContent="Saved."; setTimeout(function(){ err.textContent=""; err.style.color=""; },2000); })
+    .catch(function(){ err.textContent="Save failed. Check Firestore rules."; });
+};
+
+function sendOrder(method){
+  var u=window._user;
+  if(fbOn){
+    db.collection("orders").add({
+      product:current.name, price:current.price, payment:method,
+      name:u.name, phone:u.phone||"", email:u.email||"",
+      status:"new", createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(function(){});
+  }
+  var msg="Hello, I want to place an order:\nProduct: "+current.name+"\nPrice: AED "+current.price+"\nPayment: "+method+"\nName: "+u.name+"\n"+(u.phone?"Phone: "+u.phone:"Email: "+u.email);
+  closeAll();
+  window.open("https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg),"_blank");
+}
+$("oCod").onclick=function(){ sendOrder("COD - Cash on Delivery"); };
+$("oPay").onclick=function(){ alert("Please send your payment to:\n"+payoneerEmail()+"\n\nThen send the payment screenshot on WhatsApp."); sendOrder("Payoneer / Card"); };
+$("oCancel").onclick=closeAll;
+
+/* ---------- Admin ---------- */
+function route(){
+  var admin = location.hash==="#admin";
+  $("store").style.display=admin?"none":"block";
+  $("admin").style.display=admin?"block":"none";
+  if(admin && !fbOn){ $("loginPanel").innerHTML='<h3>Admin Login</h3><p class="muted">Firebase is not set up yet. Follow SETUP.txt and paste your config in index.html.</p>'; }
+}
+window.onhashchange=route; route();
+
+function isAdmin(u){ return u && u.email && u.email.toLowerCase()===ADMIN_EMAIL.toLowerCase(); }
+var unsubOrders=null;
+if(fbOn){
+  auth.onAuthStateChanged(function(u){
+    var ok=isAdmin(u);
+    $("loginPanel").style.display=ok?"none":"block";
+    $("adminBody").style.display=ok?"block":"none";
+    if(unsubOrders){ unsubOrders(); unsubOrders=null; }
+    if(ok){
+      renderBannerList();
+      unsubOrders=db.collection("orders").orderBy("createdAt","desc").onSnapshot(renderOrders,function(){ $("orderList").innerHTML='<p class="err">Could not load orders. Check Firestore rules.</p>'; });
+    }
+  });
+  $("aGo").onclick=function(){
+    $("aErr").textContent="";
+    auth.signInWithEmailAndPassword($("aMail").value.trim(),$("aPass").value).catch(function(){ $("aErr").textContent="Wrong email or password."; });
+  };
+  $("aOut").onclick=function(){ auth.signOut(); };
+}
+
+function renderBannerList(){
+  var el=$("bannerList"); if(!el) return;
+  if(!bannerDocs.length){ el.innerHTML='<p class="muted">No banners added yet. The default banner is showing.</p>'; return; }
+  el.innerHTML=bannerDocs.map(function(b){ return '<div class="brow"><img src="'+esc(b.img)+'" alt=""><button class="small" data-del="'+b.id+'">Delete</button></div>'; }).join("");
+  var bs=el.querySelectorAll("[data-del]");
+  for(var k=0;k<bs.length;k++) bs[k].onclick=function(){ if(confirm("Delete this banner?")) db.collection("banners").doc(this.getAttribute("data-del")).delete(); };
+}
+
+function compress(file,cb){
+  var r=new FileReader();
+  r.onload=function(){
+    var im=new Image();
+    im.onload=function(){
+      var w=Math.min(1200,im.width), h=Math.round(im.height*w/im.width);
+      var c=document.createElement("canvas"); c.width=w; c.height=h;
+      c.getContext("2d").drawImage(im,0,0,w,h);
+      cb(c.toDataURL("image/jpeg",0.7));
+    };
+    im.onerror=function(){ cb(null); };
+    im.src=r.result;
+  };
+  r.readAsDataURL(file);
+}
+$("bAdd").onclick=function(){
+  var f=$("bFile").files[0], err=$("bErr"); err.textContent="";
+  if(!fbOn){ err.textContent="Firebase is not set up."; return; }
+  if(!f){ err.textContent="Please choose an image first."; return; }
+  err.textContent="Uploading...";
+  compress(f,function(data){
+    if(!data || data.length>900000){ err.textContent="Image could not be used. Try a smaller image."; return; }
+    db.collection("banners").add({img:data,order:Date.now()}).then(function(){ err.textContent=""; $("bFile").value=""; }).catch(function(){ err.textContent="Upload failed. Check Firestore rules."; });
+  });
+};
+
+function renderOrders(snap){
+  var out=[], n=0;
+  snap.forEach(function(d){
+    var o=d.data(); n++;
+    var t=o.createdAt&&o.createdAt.toDate?o.createdAt.toDate().toLocaleString():"just now";
+    var done=o.status==="done";
+    out.push('<div class="order"><b>'+esc(o.product)+'</b> - AED '+esc(o.price)+' <span class="tag'+(done?' done':'')+'">'+(done?'Done':'New')+'</span><br>'+
+      esc(o.name)+' · '+esc(o.phone||o.email)+'<br>'+esc(o.payment)+' · '+esc(t)+'<br>'+
+      '<button class="small ok" data-st="'+d.id+'" data-v="'+(done?'new':'done')+'">'+(don
