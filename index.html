@@ -1,41 +1,81 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>M J Traders</title>
-<style>body{font-family:sans-serif;padding:15px;max-width:500px;margin:auto}input,select,button{width:100%;padding:12px;margin:6px 0;font-size:16px}button{background:green;color:#fff;border:0;border-radius:8px}.card{border:1px solid #ddd;padding:10px;border-radius:8px;margin:8px 0}</style>
-</head><body>
-<h2>M J Traders - Order Form</h2>
-<input id="date" type="date"><input id="name" placeholder="Name"><input id="phone" placeholder="Phone"><input id="address" placeholder="Address"><input id="total" placeholder="Total" type="number"><select id="payment"><option>Cash</option><option>JazzCash</option><option>EasyPaisa</option><option>Bank</option></select>
-<button onclick="save()">Order Save Karo</button>
-<p><a href="#" onclick="showAdmin()">Admin Page Kholo</a></p>
-<div id="admin" style="display:none"><h3>All Orders</h3><div id="list"></div><button onclick="clearAll()">Sab Delete</button></div>
-<script>
-function save(){
- let o={date:date.value,name:name.value,phone:phone.value,address:address.value,total:total.value,payment:payment.value};
- let a=JSON.parse(localStorage.getItem('orders')||'[]');a.push(o);localStorage.setItem('orders',JSON.stringify(a));
- alert('Order Save Ho Gaya');
-}
-function showAdmin(){admin.style.display='block';let a=JSON.parse(localStorage.getItem('orders')||'[]');list.innerHTML=a.map((x,i)=>`<div class=card><b>${i+1}. ${x.name}</b><br>${x.date} | ${x.phone}<br>${x.address}<br>Total: ${x.total} | ${x.payment}</div>`).join('')||'Koi order nahi';}
-function clearAll(){localStorage.removeItem('orders');showAdmin();}
-date.value=new Date().toISOString().slice(0,10);
-</script></body></html>
-<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>M J Traders</title>
 <style>
-body{font-family:sans-serif;text-align:center;padding:30px;background:#f8f8f8}
-h2{font-size:28px}
-.btn{display:block;background:#000;color:#fff;padding:16px;margin:15px auto;border-radius:10px;text-decoration:none;max-width:320px;font-size:18px;font-weight:bold}
+body{font-family:sans-serif;text-align:center;padding:20px;background:#f8f8f8}
+.box{background:#fff;padding:20px;border-radius:12px;max-width:360px;margin:auto;box-shadow:0 0 10px #ddd}
+input{width:90%;padding:12px;margin:8px;border:1px solid #ccc;border-radius:8px}
+.btn{display:block;background:#000;color:#fff;padding:14px;margin:10px auto;border-radius:10px;text-decoration:none;font-weight:bold;border:none;width:95%;cursor:pointer}
 .admin{background:#fff;color:#000;border:2px solid #000}
+.small{font-size:13px;color:#777}
 </style>
 </head>
 <body>
 <h2>M J Traders</h2>
-<p>Little Luxury - Order Karne Ke Liye Neeche Dabain</p>
+<p>Little Luxury</p>
+
+<div class="box" id="loginBox">
+<h3>Login / Register</h3>
+<input id="name" placeholder="Apna Naam">
+<input id="phone" placeholder="Mobile Number">
+<input id="pass" type="password" placeholder="Password Banain">
+<button class="btn" onclick="register()">Register / Login</button>
+<p class="small">Register karte hi aap login ho jayenge</p>
+<hr>
+<button class="btn admin" onclick="showAdmin()">Admin Login</button>
+</div>
+
+<div class="box" id="orderBox" style="display:none">
+<h3>Welcome <span id="userName"></span> 👋</h3>
+<p>Order karne ke liye neeche dabain</p>
 <a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLSdazmM9zYNLOwG01u0A2e7xk9C3zeglUlAGONcZzTuOa05ofQ/viewform" target="_blank">Order Now</a>
-<a class="btn admin" href="https://docs.google.com/forms/u/0/" target="_blank">Admin - Orders Dekhen</a>
-<p style="font-size:13px;color:#777">Order Google Form pe save hoga, sab devices pe dikhega</p>
+<button class="btn admin" onclick="logout()">Logout</button>
+</div>
+
+<div class="box" id="adminBox" style="display:none">
+<h3>Admin Login</h3>
+<input id="adminPass" type="password" placeholder="Admin Password">
+<button class="btn" onclick="adminLogin()">Login</button>
+<p class="small">Admin Password: <b>admin123</b> <br> Baad me isko change kar lena</p>
+<button class="btn admin" onclick="back()">Wapis</button>
+</div>
+
+<div class="box" id="adminPanel" style="display:none">
+<h3>Admin Panel ✅</h3>
+<p>Sirf aapko orders dikhenge</p>
+<a class="btn" href="https://docs.google.com/forms/u/0/" target="_blank">Orders Dekhen</a>
+<button class="btn admin" onclick="logout()">Logout</button>
+</div>
+
+<script>
+function register(){
+let n=document.getElementById('name').value;
+let p=document.getElementById('phone').value;
+if(n==""||p==""){alert("Naam aur Mobile likhen");return;}
+localStorage.setItem('mj_user',n);
+document.getElementById('userName').innerText=n;
+document.getElementById('loginBox').style.display='none';
+document.getElementById('orderBox').style.display='block';
+}
+function showAdmin(){
+document.getElementById('loginBox').style.display='none';
+document.getElementById('adminBox').style.display='block';
+}
+function adminLogin(){
+let a=document.getElementById('adminPass').value;
+if(a=="admin123"){
+document.getElementById('adminBox').style.display='none';
+document.getElementById('adminPanel').style.display='block';
+}else{alert("Ghalat Password!");}
+}
+function back(){
+document.getElementById('adminBox').style.display='none';
+document.getElementById('loginBox').style.display='block';
+}
+function logout(){location.reload();}
+</script>
 </body>
 </html>
